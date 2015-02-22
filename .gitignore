@@ -1,0 +1,4 @@
+/build
+/tmp
+/Gemfile.lock
+/.ruby-*
