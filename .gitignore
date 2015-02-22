@@ -1,4 +1,5 @@
 /build
+/coverage
 /tmp
 /Gemfile.lock
 /.ruby-*

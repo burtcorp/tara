@@ -6,4 +6,6 @@ group :development do
   gem 'rspec'
   gem 'webmock'
   gem 'travis'
+  gem 'simplecov', require: false
+  gem 'coveralls', require: false
 end
