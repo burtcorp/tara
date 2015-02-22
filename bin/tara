@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'tara'
+
+
+exit(Tara::Cli.new(ARGV).run)

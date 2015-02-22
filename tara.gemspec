@@ -15,6 +15,8 @@ Gem::Specification.new do |s|
   s.summary     = %q{Packs your Ruby app as a standalone archive}
   s.description = %q{Tara packs your Ruby app into a standalone archive with gems and a Ruby runtime}
   s.license     = 'BSD-3-Clause'
-  s.files       = Dir['lib/**/*.rb']
+  s.files       = Dir['lib/**/*.rb', 'bin/tara']
+  s.bindir      = 'bin'
+  s.executables = %w[tara]
   s.require_paths = %w[lib]
 end
