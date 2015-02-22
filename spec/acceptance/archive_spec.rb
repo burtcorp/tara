@@ -19,9 +19,17 @@ module Tara
         end
       end
 
+      def archive_path
+        @archive_path ||= File.join(tmpdir, 'exapp', 'build', detect_target, 'exapp.tgz')
+      end
+
+      def extract_archive
+        %x(tar -xzf #{archive_path} -C #{File.dirname(archive_path)})
+      end
+
       def archive
         @archive ||= begin
-          r = Gem::Package::TarReader.new(Zlib::GzipReader.open(%(#{tmpdir}/exapp/build/#{detect_target}/exapp.tgz)))
+          r = Gem::Package::TarReader.new(Zlib::GzipReader.open(archive_path))
           r.rewind
           r
         end
@@ -52,6 +60,7 @@ module Tara
       before :all do
         WebMock.disable!
         create_archive(tmpdir, target: detect_target, download_dir: download_dir)
+        extract_archive
       end
 
       after :all do
@@ -69,9 +78,8 @@ module Tara
 
       it 'creates a wrapper for each executable and places it at the top level' do
         expect(listing).to include('exapp/exapp')
-        lines = tar_entry_contents('exapp/exapp').split("\n")
-        expect(lines.first).to eq('#!/bin/bash')
-        expect(lines.last).to match(/^exec .+bin\/exapp/)
+        output = %x(cd #{File.dirname(archive_path)} && ./exapp/exapp)
+        expect(output).to match(/Running/)
       end
 
       it 'bundles gems into `lib/vendor/ruby/<VERSION>/gems`' do
