@@ -13,6 +13,7 @@ module Tara
       @config[:executables] ||= %w[bin/*]
       @config[:target] ||= 'linux-86_64'
       @config[:traveling_ruby_version] ||= '20150210'
+      @config[:without_groups] ||= %w[development test]
     end
 
     def create

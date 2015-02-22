@@ -6,6 +6,8 @@ GEM
     rack (1.6.0)
     rack-protection (1.5.3)
       rack
+    rack-test (0.6.3)
+      rack (>= 1.0)
     sinatra (1.4.5)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -21,5 +23,6 @@ PLATFORMS
 
 DEPENDENCIES
   eventmachine (= 1.0.6)
+  rack-test
   sinatra
   thin (= 1.6.3)

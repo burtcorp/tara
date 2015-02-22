@@ -59,8 +59,6 @@ module Tara
 
       before :all do
         WebMock.disable!
-        create_archive(tmpdir, target: detect_target, download_dir: download_dir)
-        extract_archive
       end
 
       after :all do
@@ -68,28 +66,52 @@ module Tara
         WebMock.enable!
       end
 
-      it 'includes the project\'s source files' do
-        expect(listing).to include('exapp/lib/exapp/cli.rb')
+      context 'with standard options' do
+        before :all do
+          create_archive(tmpdir, target: detect_target, download_dir: download_dir)
+          extract_archive
+        end
+
+        it 'includes the project\'s source files' do
+          expect(listing).to include('exapp/lib/exapp/cli.rb')
+        end
+
+        it 'includes the project\'s executables' do
+          expect(listing).to include('exapp/bin/exapp')
+        end
+
+        it 'creates a wrapper for each executable and places it at the top level' do
+          expect(listing).to include('exapp/exapp')
+          output = %x(cd #{File.dirname(archive_path)} && ./exapp/exapp)
+          expect(output).to match(/Running/)
+        end
+
+        it 'bundles gems into `lib/vendor/ruby/<VERSION>/gems`' do
+          gems = listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\/gems\/.*/ }
+          expect(gems).to_not be_empty
+        end
+
+        it 'includes gems that are defined in gem groups' do
+          gems = listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\/gems\/rack-test.*/ }
+          expect(gems).to_not be_empty
+        end
+
+        it 'puts Ruby stdlib into lib/ruby/lib/ruby/<VERSION>' do
+          entry = listing.find { |e| e =~ /lib\/ruby\/lib\/ruby\/.*\/pp\.rb/ }
+          expect(entry).to_not be_nil
+        end
       end
 
-      it 'includes the project\'s executables' do
-        expect(listing).to include('exapp/bin/exapp')
-      end
+      context 'with custom options' do
+        before :all do
+          create_archive(tmpdir, target: detect_target, download_dir: download_dir, without_groups: %w[ignore])
+          extract_archive
+        end
 
-      it 'creates a wrapper for each executable and places it at the top level' do
-        expect(listing).to include('exapp/exapp')
-        output = %x(cd #{File.dirname(archive_path)} && ./exapp/exapp)
-        expect(output).to match(/Running/)
-      end
-
-      it 'bundles gems into `lib/vendor/ruby/<VERSION>/gems`' do
-        gems = listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\/gems\/.*/ }
-        expect(gems).to_not be_empty
-      end
-
-      it 'puts Ruby stdlib into lib/ruby/lib/ruby/<VERSION>' do
-        entry = listing.find { |e| e =~ /lib\/ruby\/lib\/ruby\/.*\/pp\.rb/ }
-        expect(entry).to_not be_nil
+        it 'excludes gems in given `without_groups` option' do
+          gems = listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\/gems\/rack-test.*/ }
+          expect(gems).to be_empty
+        end
       end
     end
   end

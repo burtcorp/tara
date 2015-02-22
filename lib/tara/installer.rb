@@ -5,6 +5,7 @@ module Tara
     def initialize(package_dir, fetcher, options={})
       @package_dir = package_dir
       @fetcher = fetcher
+      @without_groups = options[:without_groups]
       @shell = options[:shell] || Shell
     end
 
@@ -17,13 +18,21 @@ module Tara
 
     private
 
+    def bundler_command
+      @bundler_command ||= begin
+        command = 'BUNDLE_IGNORE_CONFIG=1 bundle install --path vendor'
+        command << %( --without #{@without_groups.join(' ')}) if @without_groups.any?
+        command
+      end
+    end
+
     def bundle_gems
       FileUtils.mkdir_p(lib_path)
       Dir.mktmpdir do |tmpdir|
         copy_gem_files(Pathname.new(tmpdir))
         Dir.chdir(tmpdir) do
           Bundler.with_clean_env do
-            @shell.exec(%(BUNDLE_IGNORE_CONFIG=1 bundle install --path vendor --without development))
+            @shell.exec(bundler_command)
           end
           FileUtils.rm_rf('vendor/*/*/cache/*')
           FileUtils.rm_rf('vendor/ruby/*/extensions')
@@ -69,9 +78,9 @@ module Tara
       copy_gem_files(vendor_path)
       FileUtils.mkdir_p(bundle_path)
       File.open(bundle_path.join('config'), 'w+') do |f|
-        f.puts('BUNDLE_PATH: .')
-        f.puts('BUNDLE_WITHOUT: test:development')
-        f.puts('BUNDLE_DISABLE_SHARED_GEMS: \'1\'')
+        f.puts(%(BUNDLE_PATH: .))
+        f.puts(%(BUNDLE_WITHOUT: #{@without_groups.join(':')})) if @without_groups.any?
+        f.puts(%(BUNDLE_DISABLE_SHARED_GEMS: '1'))
       end
     end
 

@@ -5,3 +5,7 @@ source 'https://rubygems.org'
 gem 'sinatra'
 gem 'eventmachine', '= 1.0.6'
 gem 'thin', '= 1.6.3'
+
+group :ignore do
+  gem 'rack-test'
+end
