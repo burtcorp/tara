@@ -1,0 +1,12 @@
+language: ruby
+sudo: false
+script: bundle exec rspec
+env:
+  TARA_DOWNLOAD_DIR="$HOME/.tara/downloads"
+cache:
+  bundler: true
+  directories:
+    - $HOME/.tara/downloads
+rvm:
+  - ruby-2.1.5
+  - ruby-2.2.0

@@ -21,7 +21,7 @@ module Tara
 
       def archive
         @archive ||= begin
-          r = Gem::Package::TarReader.new(Zlib::GzipReader.open(%(build/#{detect_target}/exapp.tgz)))
+          r = Gem::Package::TarReader.new(Zlib::GzipReader.open(%(#{tmpdir}/exapp/build/#{detect_target}/exapp.tgz)))
           r.rewind
           r
         end
@@ -45,14 +45,18 @@ module Tara
         @tmpdir ||= Dir.mktmpdir
       end
 
+      def download_dir
+        @download_dir ||= ENV['TARA_DOWNLOAD_DIR'] || File.join(Dir.pwd, 'tmp', 'downloads')
+      end
+
       before :all do
         WebMock.disable!
-        create_archive(tmpdir, target: detect_target, download_dir: File.join(Dir.pwd, 'tmp', 'downloads'))
+        create_archive(tmpdir, target: detect_target, download_dir: download_dir)
       end
 
       after :all do
-        WebMock.enable!
         FileUtils.remove_entry_secure(tmpdir)
+        WebMock.enable!
       end
 
       it 'includes the project\'s source files' do

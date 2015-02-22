@@ -14,11 +14,11 @@ module Tara
     end
 
     let :tr_archive_name do
-      'traveling-ruby-20150210-2.2.0-osx.tar.gz'
+      %(traveling-ruby-20150210-#{RUBY_VERSION}-osx.tar.gz)
     end
 
     let :tr_gem_name do
-      'traveling-ruby-gems-20150210-2.2.0-osx/thin-1.6.3.tar.gz'
+      %(traveling-ruby-gems-20150210-#{RUBY_VERSION}-osx/thin-1.6.3.tar.gz)
     end
 
     after do
@@ -28,7 +28,7 @@ module Tara
     describe '#fetch_ruby' do
       context 'when the specified Ruby version exist' do
         let :local_uri do
-          'ruby-20150210-2.2.0-osx.tar.gz'
+          %(ruby-20150210-#{RUBY_VERSION}-osx.tar.gz)
         end
 
         before do
@@ -66,7 +66,7 @@ module Tara
     describe '#fetch_native_gem' do
       context 'when the specified version exist' do
         let :local_uri do
-          'thin-1.6.3-20150210-2.2.0-osx.tar.gz'
+          %(thin-1.6.3-20150210-#{RUBY_VERSION}-osx.tar.gz)
         end
 
         before do
