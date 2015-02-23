@@ -96,6 +96,11 @@ module Tara
           expect(gems).to_not be_empty
         end
 
+        it 'includes git gems' do
+          gems = listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\/gems\/thor.*/ }
+          expect(gems).to_not be_empty
+        end
+
         it 'puts Ruby stdlib into lib/ruby/lib/ruby/<VERSION>' do
           entry = listing.find { |e| e =~ /lib\/ruby\/lib\/ruby\/.*\/pp\.rb/ }
           expect(entry).to_not be_nil

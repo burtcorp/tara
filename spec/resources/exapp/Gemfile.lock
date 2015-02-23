@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/erikhuda/thor.git
+  revision: 53b3fc89ce750258e19c53b1a99b32dd5941451a
+  specs:
+    thor (0.19.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -26,3 +32,4 @@ DEPENDENCIES
   rack-test
   sinatra
   thin (= 1.6.3)
+  thor!
