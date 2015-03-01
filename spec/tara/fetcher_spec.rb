@@ -33,7 +33,7 @@ module Tara
 
         before do
           stub_request(:get, %(http://localhost:8888/releases/#{tr_archive_name}))
-            .to_return(:body => 'fake', status: 200, headers: { 'Content-Length' => 4 })
+            .to_return(body: 'fake', status: 200, headers: { 'Content-Length' => 4 })
         end
 
         it 'downloads the archive' do
@@ -71,7 +71,7 @@ module Tara
 
         before do
           stub_request(:get, %(http://localhost:8888/releases/#{tr_gem_name}))
-            .to_return(:body => 'fake', status: 200, headers: { 'Content-Length' => 4 })
+            .to_return(body: 'fake', status: 200, headers: { 'Content-Length' => 4 })
         end
 
         it 'downloads the archive' do
