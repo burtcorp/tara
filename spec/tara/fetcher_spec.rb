@@ -76,6 +76,14 @@ module Tara
           expect { fetcher.fetch_ruby }.to raise_error(TooManyRedirectsError, %(Exhausted redirect limit, ended up at http://localhost:8888/releases/#{tr_archive_name}))
         end
       end
+
+      context 'when any other response is returned' do
+        it 'raises an UnknownResponseError' do
+          stub_request(:get, %(http://localhost:8888/releases/#{tr_archive_name}))
+            .to_return(status: 500, body: 'Internal server error')
+          expect { fetcher.fetch_ruby }.to raise_error(UnknownResponseError, /500 'Internal server error' returned when fetching/)
+        end
+      end
     end
 
     describe '#fetch_native_gem' do
@@ -127,6 +135,14 @@ module Tara
               .to_return(status: 302, headers: { 'Location' => %(http://localhost:8888/releases/#{tr_gem_name}) })
           end
           expect { fetcher.fetch_native_gem('thin', '1.6.3') }.to raise_error(TooManyRedirectsError, %(Exhausted redirect limit, ended up at http://localhost:8888/releases/#{tr_gem_name}))
+        end
+      end
+
+      context 'when any other response is returned' do
+        it 'raises an UnknownResponseError' do
+          stub_request(:get, %(http://localhost:8888/releases/#{tr_gem_name}))
+            .to_return(status: 500, body: 'Internal server error')
+          expect { fetcher.fetch_native_gem('thin', '1.6.3') }.to raise_error(UnknownResponseError, /500 'Internal server error' returned when fetching/)
         end
       end
     end

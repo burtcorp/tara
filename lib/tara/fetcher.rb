@@ -61,7 +61,7 @@ module Tara
             when Net::HTTPNotFound
               raise NotFoundError, %(#{remote_uri} doesn't exist)
             else
-              # raise Unknown response or something
+              raise UnknownResponseError, %(#{response.code} '#{response.body}' returned when fetching #{remote_uri})
             end
           end
         end
