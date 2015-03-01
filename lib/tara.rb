@@ -8,6 +8,7 @@ module Tara
   TaraError = Class.new(StandardError)
   ExecError = Class.new(TaraError)
   NotFoundError = Class.new(TaraError)
+  TooManyRedirectsError = Class.new(TaraError)
 end
 
 require 'tara/archive'

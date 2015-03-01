@@ -20,22 +20,29 @@ module Tara
     end
 
     def fetch_ruby
-      remote_uri = %(traveling-ruby-#{@tr_version}-#{@ruby_version}-#{@target}.tar.gz)
       local_uri = %(#{@download_dir}/ruby-#{@tr_version}-#{@ruby_version}-#{@target}.tar.gz)
-      fetch(remote_uri, local_uri)
+      fetch(ruby_remote_uri, local_uri)
     end
 
     def fetch_native_gem(name, version)
-      remote_uri = %(traveling-ruby-gems-#{@tr_version}-#{@ruby_version}-#{@target}/#{name}-#{version}.tar.gz)
+      remote_uri = native_gem_remote_uri(name, version)
       local_uri = %(#{@download_dir}/#{name}-#{version}-#{@tr_version}-#{@ruby_version}-#{@target}.tar.gz)
       fetch(remote_uri, local_uri)
     end
 
     private
 
+    def ruby_remote_uri
+      @ruby_remote_uri ||= [@release_url, %(traveling-ruby-#{@tr_version}-#{@ruby_version}-#{@target}.tar.gz)].join('/')
+    end
+
+    def native_gem_remote_uri(name, version)
+      [@release_url, %(traveling-ruby-gems-#{@tr_version}-#{@ruby_version}-#{@target}/#{name}-#{version}.tar.gz)].join('/')
+    end
+
     def fetch(remote_uri, local_uri, limit=10)
       unless File.exist?(local_uri)
-        uri = URI([@release_url, remote_uri].join('/'))
+        uri = URI(remote_uri)
         Net::HTTP.start(uri.host, uri.port) do |http|
           http.request(Net::HTTP::Get.new(uri)) do |response|
             case response
@@ -46,10 +53,11 @@ module Tara
                 end
               end
             when Net::HTTPRedirection
-              # TODO: deal with redirects
-              # location = response['location']
-              # fetch(location, local_uri, limit - 1)
-              raise NotFoundError, %(#{remote_uri} doesn't exist)
+              if limit > 0
+                fetch(response['location'], local_uri, limit - 1)
+              else
+                raise TooManyRedirectsError, %(Exhausted redirect limit, ended up at #{remote_uri})
+              end
             when Net::HTTPNotFound
               raise NotFoundError, %(#{remote_uri} doesn't exist)
             else
