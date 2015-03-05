@@ -36,9 +36,9 @@ module Tara
           end
           FileUtils.rm_rf('vendor/*/*/cache/*')
           FileUtils.rm_rf('vendor/ruby/*/extensions')
-          @shell.exec('find vendor/ruby/*/gems -name "*.o" -exec rm {} \;')
-          @shell.exec('find vendor/ruby/*/gems -name "*.so" -exec rm {} \;')
-          @shell.exec('find vendor/ruby/*/gems -name "*.bundle" -exec rm {} \;')
+          @shell.exec('find vendor/ruby/*/gems -name "*.o" -exec rm {} \; || true')
+          @shell.exec('find vendor/ruby/*/gems -name "*.so" -exec rm {} \; || true')
+          @shell.exec('find vendor/ruby/*/gems -name "*.bundle" -exec rm {} \; || true')
           FileUtils.cp_r('vendor', lib_path, preserve: true)
         end
       end
