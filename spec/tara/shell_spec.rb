@@ -20,7 +20,7 @@ module Tara
     describe '.exec' do
       context 'with a successful command' do
         it 'returns the output of the command' do
-          expect(shell.exec(%(ls -l #{tmpdir}))).to be_empty
+          expect(shell.exec(%(echo 'hello world'))).to eq("hello world\n")
         end
       end
 
