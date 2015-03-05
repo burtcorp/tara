@@ -4,7 +4,7 @@ require 'spec_helper'
 require 'jara'
 
 
-describe 'Jara compatability' do
+describe 'Jara compatibility' do
   def create_archive(dir, options={})
     original_app_dir = File.expand_path('../../resources/exapp', __FILE__)
     FileUtils.cp_r(original_app_dir, dir)
@@ -19,6 +19,20 @@ describe 'Jara compatability' do
 
   def archive_path
     @archive_path ||= Dir[File.join(tmpdir, 'exapp', 'build', 'production', 'exapp-production-*.tgz')].first
+  end
+
+  def setup_git(project_dir)
+    Dir.chdir(project_dir) do
+      [
+        'git init --bare ../repo.git',
+        'git init',
+        'git add . && git commit -m "Initial commit"',
+        'git remote add origin ../repo.git',
+        'git push -u origin master'
+      ].each do |command|
+        Tara::Shell.exec(command + ' 2>&1')
+      end
+    end
   end
 
   before :all do
@@ -36,6 +50,6 @@ describe 'Jara compatability' do
   it 'includes executables' do
     extract_archive
     output = %x(cd #{File.dirname(archive_path)} && ./exapp)
-    expect(output).to match(/Running/)
+    expect(output).to match(/Running exapp/)
   end
 end

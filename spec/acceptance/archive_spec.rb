@@ -60,7 +60,7 @@ module Tara
         it 'creates a wrapper for each executable and places it at the top level' do
           expect(listing).to include('exapp')
           output = %x(cd #{File.dirname(archive_path)} && ./exapp)
-          expect(output).to match(/Running/)
+          expect(output).to match(/Running exapp/)
         end
 
         it 'bundles gems into `lib/vendor/ruby/<VERSION>/gems`' do

@@ -6,14 +6,14 @@ require 'optparse'
 module Tara
   class Cli
     def initialize(argv=ARGV, io=$stderr)
-      @argv = ARGV
+      @argv = argv
       @io = io
     end
 
     def run
       Archive.new(parse_argv).create
       0
-    rescue TaraError => e
+    rescue => e
       @io.puts(%(Error during packaging: #{e.message} (#{e.class})))
       1
     end
@@ -22,20 +22,20 @@ module Tara
 
     def parse_argv(options={})
       parser = OptionParser.new do |opts|
-        opts.on('--app-name', 'Name of the app') do |app_name|
+        opts.on('--app-name NAME', 'Name of the app') do |app_name|
           options[:app_name] = app_name
         end
 
-        opts.on('--app-dir', 'Root directory of the app') do |app_dir|
+        opts.on('--app-dir APP_DIR', 'Root directory of the app') do |app_dir|
           options[:app_dir] = app_dir
         end
 
-        opts.on('--build-dir', 'Where to build archive') do |build_dir|
-          options[:build_dir] = build_dir
+        opts.on('--download-dir DOWNLOAD_DIR', 'Where to store Traveling Ruby archives') do |download_dir|
+          options[:download_dir] = download_dir
         end
 
-        opts.on('--download-dir', 'Where to store Traveling Ruby archives') do |download_dir|
-          options[:download_dir] = download_dir
+        opts.on('--target TARGET', 'Target platform for archive') do |target|
+          options[:target] = target
         end
       end
       parser.parse(@argv)
