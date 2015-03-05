@@ -45,10 +45,12 @@ module Tara
     end
 
     def copy_executables(project_dir, package_dir)
-      Pathname.glob(*@config[:executables]).each do |executable|
-        copy_file(project_dir, package_dir, executable)
-        FileUtils.chmod(0755, package_dir.join(executable))
-        create_exec_wrapper(package_dir, executable)
+      @config[:executables].each do |executable_glob|
+        Pathname.glob(executable_glob).each do |executable|
+          copy_file(project_dir, package_dir, executable)
+          FileUtils.chmod(0755, package_dir.join(executable))
+          create_exec_wrapper(package_dir, executable)
+        end
       end
     end
 
