@@ -11,7 +11,7 @@ module Tara
       @config[:archive_name] ||= @config[:app_name] + '.tgz'
       @config[:files] ||= %w[lib/**/*.rb]
       @config[:executables] ||= %w[bin/*]
-      @config[:target] ||= 'linux-86_64'
+      @config[:target] ||= 'linux-x86_64'
       @config[:traveling_ruby_version] ||= '20150210'
       @config[:without_groups] ||= %w[development test]
     end
