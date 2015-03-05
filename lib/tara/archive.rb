@@ -7,6 +7,7 @@ module Tara
       @config[:app_dir] ||= Dir.pwd
       @config[:app_name] ||= File.basename(@config[:app_dir])
       @config[:build_dir] ||= File.join(@config[:app_dir], 'build')
+      @config[:target_dir] ||= @config[:build_dir]
       @config[:download_dir] ||= File.join(@config[:build_dir], 'downloads')
       @config[:archive_name] ||= @config[:app_name] + '.tgz'
       @config[:files] ||= %w[lib/**/*.rb]
@@ -20,7 +21,7 @@ module Tara
       Dir.mktmpdir do |tmp_dir|
         project_dir = Pathname.new(@config[:app_dir])
         package_dir = Pathname.new(tmp_dir).join(@config[:app_name])
-        target_dir = Pathname.new(@config[:build_dir]).join(@config[:target])
+        target_dir = Pathname.new(@config[:target_dir])
         install_dependencies(package_dir, fetcher)
         copy_source(project_dir, package_dir)
         copy_executables(project_dir, package_dir)
