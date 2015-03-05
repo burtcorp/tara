@@ -69,7 +69,7 @@ module Tara
     end
 
     def copy_gem_files(path)
-      Dir['Gemfile', 'Gemfile.lock'].each do |file|
+      Dir['Gemfile', 'Gemfile.lock', '*.gemspec'].each do |file|
         FileUtils.cp(file, path.join(File.basename(file)))
       end
     end
