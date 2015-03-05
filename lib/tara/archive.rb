@@ -36,8 +36,10 @@ module Tara
     DOT_PATH = Pathname.new('.')
 
     def copy_source(project_dir, package_dir)
-      Pathname.glob(*@config[:files]).each do |file|
-        copy_file(project_dir, package_dir, file)
+      @config[:files].each do |glob_string|
+        Pathname.glob(glob_string).each do |file|
+          copy_file(project_dir, package_dir, file)
+        end
       end
     end
 
