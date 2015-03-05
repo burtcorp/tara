@@ -20,7 +20,7 @@ module Tara
       end
 
       def archive_path
-        @archive_path ||= File.join(tmpdir, 'exapp', 'build', detect_target, 'exapp.tgz')
+        @archive_path ||= File.join(tmpdir, 'exapp', 'build', 'exapp.tgz')
       end
 
       def extract_archive
@@ -73,16 +73,16 @@ module Tara
         end
 
         it 'includes the project\'s source files' do
-          expect(listing).to include('exapp/lib/exapp/cli.rb')
+          expect(listing).to include('lib/exapp/cli.rb')
         end
 
         it 'includes the project\'s executables' do
-          expect(listing).to include('exapp/bin/exapp')
+          expect(listing).to include('bin/exapp')
         end
 
         it 'creates a wrapper for each executable and places it at the top level' do
-          expect(listing).to include('exapp/exapp')
-          output = %x(cd #{File.dirname(archive_path)} && ./exapp/exapp)
+          expect(listing).to include('exapp')
+          output = %x(cd #{File.dirname(archive_path)} && ./exapp)
           expect(output).to match(/Running/)
         end
 

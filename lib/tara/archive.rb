@@ -20,7 +20,7 @@ module Tara
     def create
       Dir.mktmpdir do |tmp_dir|
         project_dir = Pathname.new(@config[:app_dir])
-        package_dir = Pathname.new(tmp_dir).join(@config[:app_name])
+        package_dir = Pathname.new(tmp_dir)
         target_dir = Pathname.new(@config[:target_dir])
         install_dependencies(package_dir, fetcher)
         copy_source(project_dir, package_dir)
@@ -53,7 +53,7 @@ module Tara
     end
 
     def create_archive(target_dir)
-      Shell.exec('tar -czf %s %s' % @config.values_at(:archive_name, :app_name))
+      Shell.exec('tar -czf %s %s' % [@config[:archive_name], Dir['*'].join(' ')])
       FileUtils.mkdir_p(target_dir)
       FileUtils.cp(@config[:archive_name], target_dir)
     end
