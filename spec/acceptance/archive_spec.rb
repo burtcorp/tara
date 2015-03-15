@@ -141,6 +141,11 @@ module Tara
           leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.*\.bundle$/ }
           expect(leftovers).to be_empty
         end
+
+        it 'strips Java source files' do
+          java_files = listing.select { |e| e =~ /\.java$/ }
+          expect(java_files).to be_empty
+        end
       end
 
       context 'with custom options' do

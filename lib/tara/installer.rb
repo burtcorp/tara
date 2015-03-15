@@ -16,6 +16,7 @@ module Tara
       strip_tests
       strip_docs
       strip_leftovers
+      strip_java_files
       create_bundler_config
     end
 
@@ -112,6 +113,15 @@ module Tara
       @shell.exec(%(find #{ruby_vendor_path} -name "extconf.rb" -exec rm {} \\;))
       @shell.exec(%(find #{ruby_vendor_path.join('*', 'gems', '*', 'ext')} -name "Makefile" -exec rm {} \\;))
       @shell.exec(%(find #{ruby_vendor_path.join('*', 'gems', '*', 'ext')} -name "tmp" -type d -exec rm -r {} \\;))
+    end
+
+    def strip_java_files
+      @shell.exec(%(find #{ruby_vendor_path.join('*', 'gems')} -name "*.java" -exec rm {} \\;))
+    end
+
+    def remove_bundled_tara
+      @shell.exec(%(find #{ruby_vendor_path.join('*', 'gems')} -name "tara-*" -type d | xargs rm -rf))
+      @shell.exec(%(find #{ruby_vendor_path.join('*', 'bundler', 'gems')} -name "tara-*" -type d | xargs rm -rf))
     end
 
     def lib_path
