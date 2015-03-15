@@ -1,8 +1,6 @@
 # encoding: utf-8
 
 require 'spec_helper'
-require 'rubygems/package'
-require 'zlib'
 
 
 module Tara
@@ -13,26 +11,13 @@ module Tara
         FileUtils.cp_r(original_app_dir, dir)
         app_dir = File.join(dir, 'exapp')
         Dir.chdir(app_dir) do
-          archive = described_class.new(options)
-          output_path = archive.create
+          output_path = described_class.create(options)
           FileUtils.cp(output_path, dir)
         end
       end
 
       def archive_path
         @archive_path ||= File.join(tmpdir, 'exapp', 'build', 'exapp.tgz')
-      end
-
-      def extract_archive
-        %x(tar -xzf #{archive_path} -C #{File.dirname(archive_path)})
-      end
-
-      def archive
-        @archive ||= begin
-          r = Gem::Package::TarReader.new(Zlib::GzipReader.open(archive_path))
-          r.rewind
-          r
-        end
       end
 
       def entries
@@ -47,14 +32,6 @@ module Tara
         archive.rewind
         e = archive.find { |e| e.full_name == name }
         e.read
-      end
-
-      def tmpdir
-        @tmpdir ||= Dir.mktmpdir
-      end
-
-      def download_dir
-        @download_dir ||= ENV['TARA_DOWNLOAD_DIR'] || File.join(Dir.pwd, 'tmp', 'downloads')
       end
 
       before :all do

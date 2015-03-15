@@ -1,5 +1,8 @@
 language: ruby
 sudo: false
+before_script:
+  - git config --global user.email "nobody@example.com"
+  - git config --global user.name "Nobody Doe"
 script: bundle exec rspec
 env:
   TARA_DOWNLOAD_DIR="$HOME/.tara/downloads"

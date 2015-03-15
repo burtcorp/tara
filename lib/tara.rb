@@ -13,6 +13,7 @@ module Tara
 end
 
 require 'tara/archive'
+require 'tara/archiver'
 require 'tara/cli'
 require 'tara/executable'
 require 'tara/fetcher'
