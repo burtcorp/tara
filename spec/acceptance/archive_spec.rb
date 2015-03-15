@@ -11,8 +11,7 @@ module Tara
         FileUtils.cp_r(original_app_dir, dir)
         app_dir = File.join(dir, 'exapp')
         Dir.chdir(app_dir) do
-          archive = described_class.new(options)
-          output_path = archive.create
+          output_path = described_class.create(options)
           FileUtils.cp(output_path, dir)
         end
       end

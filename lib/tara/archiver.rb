@@ -7,7 +7,7 @@ module Tara
     end
 
     def create(options={})
-      Archive.new(@options.merge(options)).create
+      Archive.create(@options.merge(options))
     end
 
     def extension

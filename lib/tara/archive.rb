@@ -17,6 +17,10 @@ module Tara
       @config[:without_groups] ||= %w[development test]
     end
 
+    def self.create(config={})
+      new(config).create
+    end
+
     def create
       Dir.mktmpdir do |tmp_dir|
         project_dir = Pathname.new(@config[:app_dir])
