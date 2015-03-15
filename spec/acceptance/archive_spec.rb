@@ -105,6 +105,52 @@ module Tara
           entry = listing.find { |e| e =~ /lib\/ruby\/lib\/ruby\/.*\/pp\.rb/ }
           expect(entry).to_not be_nil
         end
+
+        it 'removes cached files' do
+          cached = listing.select { |e| e =~ /vendor\/.*\/.*\/cache\/.+/ }
+          expect(cached).to be_empty
+        end
+
+        it 'strips tests from bundled gems' do
+          tests = listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/[^\/]+\/tests/ }
+          tests += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/[^\/]+\/test/ }
+          tests += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/[^\/]+\/spec/ }
+          expect(tests).to be_empty
+        end
+
+        it 'strips documentation from bundled gems' do
+          doc = listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/[^\/]+\/doc/ }
+          doc += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/[^\/]+\/example/ }
+          doc += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.+\/*.txt$/ }
+          doc += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.+\/*.rdoc$/ }
+          doc += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.+\/*.md$/ }
+          expect(doc).to be_empty
+        end
+
+        it 'removes leftover native ext. sources and compilation objects' do
+          leftovers = listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.+\/ext\/Makefile/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.+\/ext\/.*\/tmp/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.+\/ext\/.*\/Makefile/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\.c$/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\.cpp$/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\.h$/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\.rl$/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\/extconf\.rb$/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.*\.o$/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.*\.so$/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.*\.bundle$/ }
+          expect(leftovers).to be_empty
+        end
+
+        it 'strips Java source files' do
+          java_files = listing.select { |e| e =~ /\.java$/ }
+          expect(java_files).to be_empty
+        end
+
+        it 'strips files related to Git' do
+          git_files = listing.select { |e| e =~ /\.git\/.*/ }
+          expect(git_files).to be_empty
+        end
       end
 
       context 'with custom options' do
