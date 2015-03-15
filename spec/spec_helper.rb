@@ -1,7 +1,16 @@
 # encoding: utf-8
 
 require 'support/detect_os'
+require 'support/acceptance_helpers'
 require 'webmock/rspec'
+require 'rubygems/package'
+require 'zlib'
+
+RSpec.configure do |config|
+  config.before :all do
+    WebMock.disable!
+  end
+end
 
 
 unless ENV['COVERAGE'] == 'no'

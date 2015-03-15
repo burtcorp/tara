@@ -8,4 +8,5 @@ group :development do
   gem 'travis'
   gem 'simplecov', require: false
   gem 'coveralls', require: false
+  gem 'jara', '~> 2'
 end

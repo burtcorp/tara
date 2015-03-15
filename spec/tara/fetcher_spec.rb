@@ -21,8 +21,16 @@ module Tara
       %(traveling-ruby-gems-20150210-#{RUBY_VERSION}-osx/thin-1.6.3.tar.gz)
     end
 
+    before :all do
+      WebMock.enable!
+    end
+
     after do
       FileUtils.remove_entry_secure(download_dir)
+    end
+
+    after :all do
+      WebMock.disable!
     end
 
     describe '#fetch_ruby' do
