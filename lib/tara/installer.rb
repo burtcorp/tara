@@ -17,6 +17,7 @@ module Tara
       strip_docs
       strip_leftovers
       strip_java_files
+      strip_git_files
       create_bundler_config
     end
 
@@ -117,6 +118,11 @@ module Tara
 
     def strip_java_files
       @shell.exec(%(find #{ruby_vendor_path.join('*', 'gems')} -name "*.java" -exec rm {} \\;))
+    end
+
+    def strip_git_files
+      @shell.exec(%(find #{ruby_vendor_path.join('*', 'gems')} -name ".git" -type d | xargs rm -rf))
+      @shell.exec(%(find #{ruby_vendor_path.join('*', 'bundler', 'gems')} -name ".git" -type d | xargs rm -rf))
     end
 
     def remove_bundled_tara

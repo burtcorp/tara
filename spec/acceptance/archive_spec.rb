@@ -146,6 +146,11 @@ module Tara
           java_files = listing.select { |e| e =~ /\.java$/ }
           expect(java_files).to be_empty
         end
+
+        it 'strips files related to Git' do
+          git_files = listing.select { |e| e =~ /\.git\/.*/ }
+          expect(git_files).to be_empty
+        end
       end
 
       context 'with custom options' do
