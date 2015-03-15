@@ -13,6 +13,8 @@ module Tara
       bundle_gems
       extract_ruby
       extract_native_gems
+      strip_tests
+      strip_docs
       create_bundler_config
     end
 
@@ -81,6 +83,20 @@ module Tara
         f.puts(%(BUNDLE_PATH: .))
         f.puts(%(BUNDLE_WITHOUT: #{@without_groups.join(':')})) if @without_groups.any?
         f.puts(%(BUNDLE_DISABLE_SHARED_GEMS: '1'))
+      end
+    end
+
+    def strip_tests
+      %w[tests test spec].each do |dir|
+        FileUtils.rm_r(Dir[ruby_vendor_path.join('*', 'gems', '*', dir)])
+        FileUtils.rm_r(Dir[ruby_vendor_path.join('*', 'bundler', 'gems', '*', dir)])
+      end
+    end
+
+    def strip_docs
+      %w[doc* example* *.txt *.md *.rdoc].each do |dir|
+        FileUtils.rm_r(Dir[ruby_vendor_path.join('*', 'gems', '*', dir)])
+        FileUtils.rm_r(Dir[ruby_vendor_path.join('*', 'bundler', 'gems', '*', dir)])
       end
     end
 

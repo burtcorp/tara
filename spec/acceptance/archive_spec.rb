@@ -105,6 +105,22 @@ module Tara
           entry = listing.find { |e| e =~ /lib\/ruby\/lib\/ruby\/.*\/pp\.rb/ }
           expect(entry).to_not be_nil
         end
+
+        it 'strips tests from bundled gems' do
+          tests = listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/[^\/]+\/tests/ }
+          tests += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/[^\/]+\/test/ }
+          tests += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/[^\/]+\/spec/ }
+          expect(tests).to be_empty
+        end
+
+        it 'strips documentation from bundled gems' do
+          doc = listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/[^\/]+\/doc/ }
+          doc += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/[^\/]+\/example/ }
+          doc += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.+\/*.txt$/ }
+          doc += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.+\/*.rdoc$/ }
+          doc += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.+\/*.md$/ }
+          expect(doc).to be_empty
+        end
       end
 
       context 'with custom options' do
