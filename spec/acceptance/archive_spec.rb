@@ -106,6 +106,11 @@ module Tara
           expect(entry).to_not be_nil
         end
 
+        it 'removes cached files' do
+          cached = listing.select { |e| e =~ /vendor\/.*\/.*\/cache\/.+/ }
+          expect(cached).to be_empty
+        end
+
         it 'strips tests from bundled gems' do
           tests = listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/[^\/]+\/tests/ }
           tests += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/[^\/]+\/test/ }

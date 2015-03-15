@@ -37,8 +37,12 @@ module Tara
           Bundler.with_clean_env do
             @shell.exec(bundler_command)
           end
-          FileUtils.rm_rf('vendor/*/*/cache/*')
-          FileUtils.rm_rf('vendor/ruby/*/extensions')
+          Dir['vendor/*/*/cache/*'].each do |cached_file|
+            FileUtils.rm_rf(cached_file)
+          end
+          Dir['vendor/ruby/*/extensions/*'].each do |ext_file|
+            FileUtils.rm_rf(ext_file)
+          end
           @shell.exec('find vendor/ruby/*/gems -name "*.o" -exec rm {} \; || true')
           @shell.exec('find vendor/ruby/*/gems -name "*.so" -exec rm {} \; || true')
           @shell.exec('find vendor/ruby/*/gems -name "*.bundle" -exec rm {} \; || true')
