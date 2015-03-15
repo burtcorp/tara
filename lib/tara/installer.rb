@@ -94,17 +94,11 @@ module Tara
     end
 
     def strip_tests
-      %w[tests test spec].each do |dir|
-        FileUtils.rm_r(Dir[ruby_vendor_path.join('*', 'gems', '*', dir)])
-        FileUtils.rm_r(Dir[ruby_vendor_path.join('*', 'bundler', 'gems', '*', dir)])
-      end
+      strip_from_gems(%w[tests test spec])
     end
 
     def strip_docs
-      %w[doc* example* *.txt *.md *.rdoc].each do |dir|
-        FileUtils.rm_r(Dir[ruby_vendor_path.join('*', 'gems', '*', dir)])
-        FileUtils.rm_r(Dir[ruby_vendor_path.join('*', 'bundler', 'gems', '*', dir)])
-      end
+      strip_from_gems(%w[doc* example* *.txt *.md *.rdoc])
     end
 
     def strip_leftovers
@@ -112,22 +106,29 @@ module Tara
         @shell.exec(%(find #{ruby_vendor_path} -name "*.#{ext}" -exec rm {} \\;))
       end
       @shell.exec(%(find #{ruby_vendor_path} -name "extconf.rb" -exec rm {} \\;))
-      @shell.exec(%(find #{ruby_vendor_path.join('*', 'gems', '*', 'ext')} -name "Makefile" -exec rm {} \\;))
-      @shell.exec(%(find #{ruby_vendor_path.join('*', 'gems', '*', 'ext')} -name "tmp" -type d -exec rm -r {} \\;))
+      @shell.exec(%(find #{vendor_gems_glob.join('*', 'ext')} -name "Makefile" -exec rm {} \\;))
+      @shell.exec(%(find #{vendor_gems_glob.join('*', 'ext')} -name "tmp" -type d | xargs rm -rf))
     end
 
     def strip_java_files
-      @shell.exec(%(find #{ruby_vendor_path.join('*', 'gems')} -name "*.java" -exec rm {} \\;))
+      @shell.exec(%(find #{vendor_gems_glob} -name "*.java" -exec rm {} \\;))
     end
 
     def strip_git_files
-      @shell.exec(%(find #{ruby_vendor_path.join('*', 'gems')} -name ".git" -type d | xargs rm -rf))
-      @shell.exec(%(find #{ruby_vendor_path.join('*', 'bundler', 'gems')} -name ".git" -type d | xargs rm -rf))
+      @shell.exec(%(find #{vendor_gems_glob} -name ".git" -type d | xargs rm -rf))
+      @shell.exec(%(find #{bundler_gems_glob} -name ".git" -type d | xargs rm -rf))
     end
 
     def remove_bundled_tara
-      @shell.exec(%(find #{ruby_vendor_path.join('*', 'gems')} -name "tara-*" -type d | xargs rm -rf))
-      @shell.exec(%(find #{ruby_vendor_path.join('*', 'bundler', 'gems')} -name "tara-*" -type d | xargs rm -rf))
+      @shell.exec(%(find #{vendor_gems_glob} -name "tara-*" -type d | xargs rm -rf))
+      @shell.exec(%(find #{bundler_gems_glob} -name "tara-*" -type d | xargs rm -rf))
+    end
+
+    def strip_from_gems(things)
+      things.each do |thing|
+        FileUtils.rm_r(Dir[vendor_gems_glob.join('*', thing)])
+        FileUtils.rm_r(Dir[bundler_gems_glob.join('*', thing)])
+      end
     end
 
     def lib_path
@@ -148,6 +149,14 @@ module Tara
 
     def ruby_path
       @ruby_path ||= lib_path.join('ruby')
+    end
+
+    def bundler_gems_glob
+      @bundler_gems_glob ||= ruby_vendor_path.join('*', 'bundler', 'gems')
+    end
+
+    def vendor_gems_glob
+      @vendor_gems_glob ||= ruby_vendor_path.join('*', 'gems')
     end
   end
 end
