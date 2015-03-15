@@ -121,6 +121,21 @@ module Tara
           doc += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.+\/*.md$/ }
           expect(doc).to be_empty
         end
+
+        it 'removes leftover native ext. sources and compilation objects' do
+          leftovers = listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.+\/ext\/Makefile/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.+\/ext\/.*\/tmp/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.+\/ext\/.*\/Makefile/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\.c$/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\.cpp$/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\.h$/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\.rl$/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\/extconf\.rb$/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.*\.o$/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.*\.so$/ }
+          leftovers += listing.select { |e| e =~ /lib\/vendor\/ruby\/.+\/gems\/.*\.bundle$/ }
+          expect(leftovers).to be_empty
+        end
       end
 
       context 'with custom options' do

@@ -15,6 +15,7 @@ module Tara
       extract_native_gems
       strip_tests
       strip_docs
+      strip_leftovers
       create_bundler_config
     end
 
@@ -98,6 +99,15 @@ module Tara
         FileUtils.rm_r(Dir[ruby_vendor_path.join('*', 'gems', '*', dir)])
         FileUtils.rm_r(Dir[ruby_vendor_path.join('*', 'bundler', 'gems', '*', dir)])
       end
+    end
+
+    def strip_leftovers
+      %w[c cpp h rl].each do |ext|
+        @shell.exec(%(find #{ruby_vendor_path} -name "*.#{ext}" -exec rm {} \\;))
+      end
+      @shell.exec(%(find #{ruby_vendor_path} -name "extconf.rb" -exec rm {} \\;))
+      @shell.exec(%(find #{ruby_vendor_path.join('*', 'gems', '*', 'ext')} -name "Makefile" -exec rm {} \\;))
+      @shell.exec(%(find #{ruby_vendor_path.join('*', 'gems', '*', 'ext')} -name "tmp" -type d -exec rm -r {} \\;))
     end
 
     def lib_path
