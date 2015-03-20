@@ -122,11 +122,6 @@ module Tara
       @shell.exec(%(find #{bundler_gems_glob} -name ".git" -type d | xargs rm -rf))
     end
 
-    def remove_bundled_tara
-      @shell.exec(%(find #{vendor_gems_glob} -name "tara-*" -type d | xargs rm -rf))
-      @shell.exec(%(find #{bundler_gems_glob} -name "tara-*" -type d | xargs rm -rf))
-    end
-
     def strip_from_gems(things)
       things.each do |thing|
         FileUtils.rm_r(Dir[vendor_gems_glob.join('*', thing)])
