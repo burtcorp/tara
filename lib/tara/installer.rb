@@ -46,9 +46,9 @@ module Tara
           Dir['vendor/ruby/*/extensions/*'].each do |ext_file|
             FileUtils.rm_rf(ext_file)
           end
-          @shell.exec('find vendor/ruby/*/gems -name "*.o" -exec rm {} \; || true')
-          @shell.exec('find vendor/ruby/*/gems -name "*.so" -exec rm {} \; || true')
-          @shell.exec('find vendor/ruby/*/gems -name "*.bundle" -exec rm {} \; || true')
+          @shell.exec('find vendor/ruby/*/gems -name "*.o" -exec rm {} \; 2>&1 || true')
+          @shell.exec('find vendor/ruby/*/gems -name "*.so" -exec rm {} \; 2>&1 || true')
+          @shell.exec('find vendor/ruby/*/gems -name "*.bundle" -exec rm {} \; 2>&1 || true')
           FileUtils.cp_r('vendor', lib_path, preserve: true)
         end
       end
@@ -106,11 +106,11 @@ module Tara
 
     def strip_leftovers
       %w[c cpp h rl].each do |ext|
-        @shell.exec(%(find #{ruby_vendor_path} -name "*.#{ext}" -exec rm {} \\;))
+        @shell.exec(%(find #{ruby_vendor_path} -name "*.#{ext}" -exec rm {} \\; 2>&1))
       end
       @shell.exec(%(find #{ruby_vendor_path} -name "extconf.rb" -exec rm {} \\;))
-      @shell.exec(%(find #{vendor_gems_glob.join('*', 'ext')} -name "Makefile" -exec rm {} \\;))
-      @shell.exec(%(find #{vendor_gems_glob.join('*', 'ext')} -name "tmp" -type d | xargs rm -rf))
+      @shell.exec(%(find #{vendor_gems_glob.join('*', 'ext')} -name "Makefile" -exec rm {} \\; 2>&1))
+      @shell.exec(%(find #{vendor_gems_glob.join('*', 'ext')} -name "tmp" -type d 2>&1 | xargs rm -rf))
     end
 
     def strip_java_files
