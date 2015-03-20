@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/mthssdrbrg/tara.svg?branch=master)](https://travis-ci.org/mthssdrbrg/tara)
 [![Coverage Status](https://coveralls.io/repos/mthssdrbrg/tara/badge.svg?branch=master)](https://coveralls.io/r/mthssdrbrg/tara?branch=master)
+[![Gem Version](https://badge.fury.io/rb/tara.svg)](http://badge.fury.io/rb/tara)
 
 Tara packs your application into a gzipped TAR archive along with a complete
 Ruby runtime and all of the necessary gems.
