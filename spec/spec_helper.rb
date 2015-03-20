@@ -26,6 +26,7 @@ unless ENV['COVERAGE'] == 'no'
     add_group 'Source', 'lib'
     add_group 'Unit tests', 'spec/tara'
     add_group 'Acceptance tests', 'spec/acceptance'
+    add_group 'Integration tests', 'spec/integration'
   end
 end
 
