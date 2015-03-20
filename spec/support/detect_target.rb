@@ -3,7 +3,7 @@
 require 'rbconfig'
 
 
-module DetectOS
+module DetectTarget
   def detect_target
     @os ||= begin
       case (host_os = RbConfig::CONFIG['host_os'])
@@ -24,5 +24,5 @@ module DetectOS
 end
 
 RSpec.configure do |config|
-  config.include(DetectOS)
+  config.include(DetectTarget)
 end

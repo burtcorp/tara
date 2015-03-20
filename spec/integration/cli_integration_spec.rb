@@ -13,7 +13,7 @@ describe 'bin/tara' do
   end
 
   def build_dir
-    @build_dir ||= tmpdir
+    @build_dir ||= File.expand_path('../../resources/exapp/build', __FILE__)
   end
 
   def download_dir

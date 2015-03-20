@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-module AcceptanceHelpers
+module ArchiveHelpers
   def extract_archive
     %x(tar -xzf #{archive_path} -C #{File.dirname(archive_path)})
   end
@@ -23,5 +23,5 @@ module AcceptanceHelpers
 end
 
 RSpec.configure do |config|
-  config.include(AcceptanceHelpers)
+  config.include(ArchiveHelpers)
 end

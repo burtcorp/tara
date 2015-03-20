@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-require 'support/detect_os'
-require 'support/acceptance_helpers'
+require 'support/detect_target'
+require 'support/archive_helpers'
 require 'webmock/rspec'
 require 'rubygems/package'
 require 'zlib'
