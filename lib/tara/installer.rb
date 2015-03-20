@@ -6,6 +6,7 @@ module Tara
       @package_dir = package_dir
       @fetcher = fetcher
       @without_groups = options[:without_groups]
+      @app_dir = Pathname.new(options[:app_dir])
       @shell = options[:shell] || Shell
     end
 
@@ -25,7 +26,7 @@ module Tara
 
     def bundler_command
       @bundler_command ||= begin
-        command = 'BUNDLE_IGNORE_CONFIG=1 bundle install --path vendor'
+        command = 'BUNDLE_IGNORE_CONFIG=1 bundle install --jobs 4 --path vendor'
         command << %( --without #{@without_groups.join(' ')}) if @without_groups.any?
         command
       end
@@ -79,7 +80,9 @@ module Tara
 
     def copy_gem_files(path)
       Dir['Gemfile', 'Gemfile.lock', '*.gemspec'].each do |file|
-        FileUtils.cp(file, path.join(File.basename(file)))
+        if File.exist?(@app_dir.join(file))
+          FileUtils.cp(@app_dir.join(file), path.join(File.basename(file)))
+        end
       end
     end
 
@@ -117,11 +120,6 @@ module Tara
     def strip_git_files
       @shell.exec(%(find #{vendor_gems_glob} -name ".git" -type d | xargs rm -rf))
       @shell.exec(%(find #{bundler_gems_glob} -name ".git" -type d | xargs rm -rf))
-    end
-
-    def remove_bundled_tara
-      @shell.exec(%(find #{vendor_gems_glob} -name "tara-*" -type d | xargs rm -rf))
-      @shell.exec(%(find #{bundler_gems_glob} -name "tara-*" -type d | xargs rm -rf))
     end
 
     def strip_from_gems(things)

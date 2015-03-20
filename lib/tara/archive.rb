@@ -42,7 +42,7 @@ module Tara
 
     def copy_source(project_dir, package_dir)
       @config[:files].each do |glob_string|
-        Pathname.glob(glob_string).each do |file|
+        Pathname.glob(project_dir.join(glob_string)).each do |file|
           copy_file(project_dir, package_dir, file)
         end
       end
@@ -50,7 +50,7 @@ module Tara
 
     def copy_executables(project_dir, package_dir)
       @config[:executables].each do |executable_glob|
-        Pathname.glob(executable_glob).each do |executable|
+        Pathname.glob(project_dir.join(executable_glob)).each do |executable|
           copy_file(project_dir, package_dir, executable)
           FileUtils.chmod(0755, package_dir.join(executable))
           create_exec_wrapper(package_dir, executable)
@@ -73,10 +73,11 @@ module Tara
     end
 
     def copy_file(project_dir, package_dir, file)
-      unless file.dirname == DOT_PATH
-        FileUtils.mkdir_p(package_dir.join(file.dirname))
+      rel_file = file.relative_path_from(project_dir)
+      unless rel_file.dirname == DOT_PATH
+        FileUtils.mkdir_p(package_dir.join(rel_file.dirname))
       end
-      FileUtils.cp(project_dir.join(file), package_dir.join(file))
+      FileUtils.cp(project_dir.join(rel_file), package_dir.join(rel_file))
     end
 
     def create_exec_wrapper(package_dir, executable)
