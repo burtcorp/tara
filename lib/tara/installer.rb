@@ -26,7 +26,7 @@ module Tara
 
     def bundler_command
       @bundler_command ||= begin
-        command = 'BUNDLE_IGNORE_CONFIG=1 bundle install --path vendor'
+        command = 'BUNDLE_IGNORE_CONFIG=1 bundle install --jobs 4 --path vendor'
         command << %( --without #{@without_groups.join(' ')}) if @without_groups.any?
         command
       end
