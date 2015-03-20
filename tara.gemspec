@@ -19,4 +19,5 @@ Gem::Specification.new do |s|
   s.bindir      = 'bin'
   s.executables = %w[tara]
   s.require_paths = %w[lib]
+  s.required_ruby_version = '>= 2.1.5'
 end
