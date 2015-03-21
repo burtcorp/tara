@@ -7,7 +7,6 @@ module Tara
       @config[:app_dir] ||= Dir.pwd
       @config[:app_name] ||= File.basename(@config[:app_dir])
       @config[:build_dir] ||= File.join(@config[:app_dir], 'build')
-      @config[:target_dir] ||= @config[:build_dir]
       @config[:download_dir] ||= File.join(@config[:build_dir], 'downloads')
       @config[:archive_name] ||= @config[:app_name] + '.tgz'
       @config[:files] ||= %w[lib/**/*.rb]
@@ -25,14 +24,14 @@ module Tara
       Dir.mktmpdir do |tmp_dir|
         project_dir = Pathname.new(@config[:app_dir])
         package_dir = Pathname.new(tmp_dir)
-        target_dir = Pathname.new(@config[:target_dir])
+        build_dir = Pathname.new(@config[:build_dir])
         install_dependencies(package_dir, fetcher)
         copy_source(project_dir, package_dir)
         copy_executables(project_dir, package_dir)
         Dir.chdir(tmp_dir) do
-          create_archive(target_dir)
+          create_archive(build_dir)
         end
-        File.join(target_dir, @config[:archive_name])
+        File.join(build_dir, @config[:archive_name])
       end
     end
 
@@ -58,10 +57,10 @@ module Tara
       end
     end
 
-    def create_archive(target_dir)
+    def create_archive(build_dir)
       Shell.exec('tar -czf %s %s' % [@config[:archive_name], Dir['*'].join(' ')])
-      FileUtils.mkdir_p(target_dir)
-      FileUtils.cp(@config[:archive_name], target_dir)
+      FileUtils.mkdir_p(build_dir)
+      FileUtils.cp(@config[:archive_name], build_dir)
     end
 
     def fetcher
