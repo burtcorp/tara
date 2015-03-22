@@ -2,16 +2,17 @@
 
 module Tara
   class Archiver
-    def initialize(options={})
-      @options = options
+    def initialize(config={})
+      @config = config
+      @config[:metadata] ||= {}
     end
 
     def create(options={})
-      Archive.create(@options.merge(options))
+      Archive.create(@config.merge(options))
     end
 
     def extension
-      @options[:extension] || 'tgz'
+      'tgz'
     end
 
     def content_type
@@ -19,7 +20,7 @@ module Tara
     end
 
     def metadata
-      @options[:metadata] || {}
+      @config[:metadata]
     end
   end
 end

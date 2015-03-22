@@ -14,20 +14,8 @@ module Tara
     end
 
     describe '#extension' do
-      context 'by default' do
-        it 'returns `tgz`' do
-          expect(archiver.extension).to eq('tgz')
-        end
-      end
-
-      context 'when overridden' do
-        let :options do
-          {extension: 'tar.gz'}
-        end
-
-        it 'returns the overridden value' do
-          expect(archiver.extension).to eq('tar.gz')
-        end
+      it 'returns `tgz`' do
+        expect(archiver.extension).to eq('tgz')
       end
     end
 
