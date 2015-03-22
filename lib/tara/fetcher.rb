@@ -4,6 +4,7 @@ require 'net/http'
 
 
 module Tara
+  # @private
   class Fetcher
     def initialize(download_dir, target, tr_version, options={})
       @download_dir = download_dir

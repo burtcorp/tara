@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 module Tara
+  # @private
   class Shell
     def self.exec(command)
       output = %x(#{command})

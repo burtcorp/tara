@@ -1,7 +1,56 @@
 # encoding: utf-8
 
 module Tara
+  # Packs an application along with a Ruby runtime and dependencies into a TAR archive.
+  #
+  # The archive will include the source code of your project (which is assumed to
+  # be in the `lib` directory), wrapper scripts for each executable (assumed to be
+  # in the `bin` directory), and all gems that aren't in the `test` or `development`
+  # groups in your project's Gemfile.
+  #
+  # @example Creating an archive from a Rake task
+  #   task :archive do
+  #     Tara::Archive.new.create
+  #   end
+  #
+  # @example Configuring the archive to be created
+  #   task :archive do
+  #     archive = Tara::Archive.new(
+  #       target: 'osx',
+  #       traveling_ruby_version: '20150204',
+  #       without_groups: %w[test],
+  #     )
+  #     archive.create
+  #   end
+  #
   class Archive
+    # Create a new instance of `Archive` with the specified configuration.
+    #
+    # Tara attempts to use sane defaults in most of all cases, for example like
+    # assuming that the source code is in the `lib` directory of your project,
+    # that the name of the application is the same as the project directory.
+    #
+    # @param [Hash] config
+    # @option config [String] :app_dir (Dir.pwd) absolute path to the application
+    #   directory.
+    # @option config [String] :app_name (File.basename(@config[:app_dir])) name of
+    #   the application.
+    # @option config [String] :build_dir (File.join(@config[:app_dir], 'build'))
+    #   the directory where the archive will be created.
+    # @option config [String] :download_dir (File.join(@config[:build_dir], 'downloads'))
+    #   the directory where Traveling Ruby artifacts will be downloaded.
+    # @option config [String] :archive_name (@config[:app_name] + '.tgz') name of the archive
+    # @option config [Array<String>] :files (%w[lib/**/*.rb]) list of globs that will be
+    #   expanded when including source files in archive. Should be relative from :app_dir.
+    # @option config [Array<String>] :executables (%w[bin/*]) list of globs that will be
+    #   expanded when including executables in archive. Should be relative from :app_dir.
+    # @option config [String] :target (linux-x86_64) target platform that the archive will
+    #   be created for. Should be one of "linux-x86", "linux-x86_64", or "osx".
+    # @option config [String] :traveling_ruby_version (20150210) release of Traveling Ruby
+    #   that should be used.
+    # @option config [Array<String>] :without_groups (%w[development test]) list of gem
+    #   groups to exclude from the archive.
+    #
     def initialize(config={})
       @config = config
       @config[:app_dir] ||= Dir.pwd
@@ -16,10 +65,19 @@ module Tara
       @config[:without_groups] ||= %w[development test]
     end
 
+    # Short for `Archive.new(config).create`
+    #
+    # @return [String] Path to the archive
+    #
     def self.create(config={})
       new(config).create
     end
 
+
+    # Create an archive using the instance's configuration.
+    #
+    # @return [String] Path to the archive
+    #
     def create
       Dir.mktmpdir do |tmp_dir|
         project_dir = Pathname.new(@config[:app_dir])
