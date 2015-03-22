@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 module Tara
+  # @private
   class Installer
     def initialize(package_dir, fetcher, options={})
       @package_dir = package_dir

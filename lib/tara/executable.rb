@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 module Tara
+  # @private
   class Executable
     def initialize(name)
       @name = name

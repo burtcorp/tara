@@ -4,6 +4,7 @@ require 'optparse'
 
 
 module Tara
+  # @private
   class Cli
     def initialize(argv=ARGV, io=$stderr)
       @argv = argv
