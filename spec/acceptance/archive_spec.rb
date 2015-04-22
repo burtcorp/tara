@@ -45,7 +45,7 @@ module Tara
 
       context 'with standard options' do
         before :all do
-          create_archive(tmpdir, target: detect_target, download_dir: download_dir)
+          create_archive(tmpdir, executables: %w[bin/* ext/*], target: detect_target, download_dir: download_dir)
           extract_archive
         end
 
@@ -61,6 +61,12 @@ module Tara
           expect(listing).to include('exapp')
           output = %x(cd #{File.dirname(archive_path)} && ./exapp)
           expect(output).to match(/Running exapp/)
+        end
+
+        it 'correctly creates wrapper scripts for executables that aren\'t in the `bin` directory' do
+          expect(listing).to include('nonbin')
+          output = %x(cd #{File.dirname(archive_path)} && ./nonbin)
+          expect(output.strip).to eq('Hello world')
         end
 
         it 'bundles gems into `lib/vendor/ruby/<VERSION>/gems`' do
