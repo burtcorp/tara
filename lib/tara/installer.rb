@@ -47,9 +47,9 @@ module Tara
           Dir['vendor/ruby/*/extensions/*'].each do |ext_file|
             FileUtils.rm_rf(ext_file)
           end
-          @shell.exec('find vendor/ruby/*/gems -name "*.o" -exec rm {} \; 2>&1 || true')
-          @shell.exec('find vendor/ruby/*/gems -name "*.so" -exec rm {} \; 2>&1 || true')
-          @shell.exec('find vendor/ruby/*/gems -name "*.bundle" -exec rm {} \; 2>&1 || true')
+          @shell.exec('find vendor/ruby/*/gems -name "*.o" -exec rm {} \; 2> /dev/null || true')
+          @shell.exec('find vendor/ruby/*/gems -name "*.so" -exec rm {} \; 2> /dev/null || true')
+          @shell.exec('find vendor/ruby/*/gems -name "*.bundle" -exec rm {} \; 2> /dev/null || true')
           FileUtils.cp_r('vendor', lib_path, preserve: true)
         end
       end
@@ -66,7 +66,7 @@ module Tara
       native_gems = find_native_gems
       native_gems.each do |name, version|
         gem_archive_path = @fetcher.fetch_native_gem(name, version)
-        @shell.exec %(tar -xzf #{gem_archive_path} -C #{ruby_vendor_path})
+        @shell.exec(%(tar -xzf #{gem_archive_path} -C #{ruby_vendor_path}))
       end
     end
 
@@ -107,20 +107,20 @@ module Tara
 
     def strip_leftovers
       %w[c cpp h rl].each do |ext|
-        @shell.exec(%(find #{ruby_vendor_path} -name "*.#{ext}" -exec rm {} \\; 2>&1))
+        @shell.exec(%(find #{ruby_vendor_path} -name "*.#{ext}" -exec rm {} \\; 2> /dev/null))
       end
-      @shell.exec(%(find #{ruby_vendor_path} -name "extconf.rb" -exec rm {} \\;))
-      @shell.exec(%(find #{vendor_gems_glob.join('*', 'ext')} -name "Makefile" -exec rm {} \\; 2>&1))
-      @shell.exec(%(find #{vendor_gems_glob.join('*', 'ext')} -name "tmp" -type d 2>&1 | xargs rm -rf))
+      @shell.exec(%(find #{ruby_vendor_path} -name "extconf.rb" -exec rm {} \\; 2> /dev/null))
+      @shell.exec(%(find #{vendor_gems_glob.join('*', 'ext')} -name "Makefile" -exec rm {} \\; 2> /dev/null))
+      @shell.exec(%(find #{vendor_gems_glob.join('*', 'ext')} -name "tmp" -type d 2> /dev/null | xargs rm -rf))
     end
 
     def strip_java_files
-      @shell.exec(%(find #{vendor_gems_glob} -name "*.java" -exec rm {} \\;))
+      @shell.exec(%(find #{vendor_gems_glob} -name "*.java" -exec rm {} \\; 2> /dev/null))
     end
 
     def strip_git_files
-      @shell.exec(%(find #{vendor_gems_glob} -name ".git" -type d | xargs rm -rf))
-      @shell.exec(%(find #{bundler_gems_glob} -name ".git" -type d | xargs rm -rf))
+      @shell.exec(%(find #{vendor_gems_glob} -name ".git" -type d 2> /dev/null | xargs rm -rf))
+      @shell.exec(%(find #{bundler_gems_glob} -name ".git" -type d 2> /dev/null | xargs rm -rf))
     end
 
     def strip_from_gems(things)
