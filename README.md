@@ -78,10 +78,15 @@ Due to how archives are packaged, executables (scripts usually placed in the
 packaged Ruby library.
 
 Tara will automatically create wrapper scripts for executables in the `bin`
-directory, and thus it assumes that they are Ruby-only scripts (i.e. not Bash
-scripts or whatnot).
+directory, and it'll assume that they are Ruby-only scripts (i.e. not Bash
+scripts or whatnot). I'd recommend to use a `#!/usr/bin/env ruby` shebang).
 
-It is not currently possible to supply your own wrapper scripts, but it will
+Executables placed at the top-level of a repository is currently not supported,
+as it's far from standard and causes some issues when creating the archive as
+the wrapper scripts are placed at the top-level of the archive, effectively
+overwriting the script that they're wrapping.
+
+At this time it is not possible to supply your own wrapper scripts, but it'll
 most likely be possible in future releases.
 
 ## Jara compatibility
