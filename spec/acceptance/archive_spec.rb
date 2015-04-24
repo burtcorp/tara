@@ -63,6 +63,10 @@ module Tara
           expect(output).to match(/Running exapp/)
         end
 
+        it 'ignores directories in `executables` glob' do
+          expect(listing).to_not include('bin/bindir')
+        end
+
         it 'bundles gems into `lib/vendor/ruby/<VERSION>/gems`' do
           gems = listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\/gems\/.*/ }
           expect(gems).to_not be_empty
