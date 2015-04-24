@@ -45,7 +45,7 @@ module Tara
 
       context 'with standard options' do
         before :all do
-          create_archive(tmpdir, executables: %w[bin/* ext/*], target: detect_target, download_dir: download_dir)
+          create_archive(tmpdir, target: detect_target, download_dir: download_dir)
           extract_archive
         end
 
@@ -61,12 +61,6 @@ module Tara
           expect(listing).to include('exapp')
           output = %x(cd #{File.dirname(archive_path)} && ./exapp)
           expect(output).to match(/Running exapp/)
-        end
-
-        it 'correctly creates wrapper scripts for executables that aren\'t in the `bin` directory' do
-          expect(listing).to include('nonbin')
-          output = %x(cd #{File.dirname(archive_path)} && ./nonbin)
-          expect(output.strip).to eq('Hello world')
         end
 
         it 'bundles gems into `lib/vendor/ruby/<VERSION>/gems`' do
@@ -138,13 +132,29 @@ module Tara
 
       context 'with custom options' do
         before :all do
-          create_archive(tmpdir, target: detect_target, download_dir: download_dir, without_groups: %w[ignore])
+          create_archive(tmpdir, {
+            files: %w[lib/*],
+            executables: %w[bin/* ext/*],
+            target: detect_target,
+            download_dir: download_dir,
+            without_groups: %w[ignore]
+          })
           extract_archive
+        end
+
+        it 'recursively includes source files' do
+          expect(listing).to include('lib/exapp/cli.rb')
         end
 
         it 'excludes gems in given `without_groups` option' do
           gems = listing.select { |e| e =~ /lib\/vendor\/ruby\/.*\/gems\/rack-test.*/ }
           expect(gems).to be_empty
+        end
+
+        it 'correctly creates wrapper scripts for executables that aren\'t in the `bin` directory' do
+          expect(listing).to include('nonbin')
+          output = %x(cd #{File.dirname(archive_path)} && ./nonbin)
+          expect(output.strip).to eq('Hello world')
         end
       end
     end
