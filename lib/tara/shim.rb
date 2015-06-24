@@ -2,7 +2,7 @@
 
 module Tara
   # @private
-  class Executable
+  class Shim
     def initialize(dirpath, name)
       @dirpath = dirpath
       @name = name
