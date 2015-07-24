@@ -60,6 +60,10 @@ describe 'bin/tara' do
       StringIO.new
     end
 
+    before do
+      allow(Tara::Shell).to receive(:exec).and_raise
+    end
+
     it 'exits with status code 1 if an error occurs' do
       expect(Tara::Cli.new([], io).run).to eq(1)
     end

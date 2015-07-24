@@ -47,9 +47,9 @@ module Tara
           Dir['vendor/ruby/*/extensions/*'].each do |ext_file|
             FileUtils.rm_rf(ext_file)
           end
-          @shell.exec('find vendor/ruby/*/gems -name "*.o" -exec rm {} \; 2> /dev/null || true')
-          @shell.exec('find vendor/ruby/*/gems -name "*.so" -exec rm {} \; 2> /dev/null || true')
-          @shell.exec('find vendor/ruby/*/gems -name "*.bundle" -exec rm {} \; 2> /dev/null || true')
+          %w[o so bundle].each do |ext|
+            find_and_remove_files('vendor/ruby/*/gems', %(*.#{ext}))
+          end
           FileUtils.cp_r('vendor', lib_path, preserve: true)
         end
       end
@@ -107,20 +107,20 @@ module Tara
 
     def strip_leftovers
       %w[c cpp h rl].each do |ext|
-        @shell.exec(%(find #{ruby_vendor_path} -name "*.#{ext}" -exec rm {} \\; 2> /dev/null))
+        find_and_remove_files(ruby_vendor_path, %(*.#{ext}))
       end
-      @shell.exec(%(find #{ruby_vendor_path} -name "extconf.rb" -exec rm {} \\; 2> /dev/null))
-      @shell.exec(%(find #{vendor_gems_glob.join('*', 'ext')} -name "Makefile" -exec rm {} \\; 2> /dev/null))
-      @shell.exec(%(find #{vendor_gems_glob.join('*', 'ext')} -name "tmp" -type d 2> /dev/null | xargs rm -rf))
+      find_and_remove_files(ruby_vendor_path, 'extconf.rb')
+      find_and_remove_files(vendor_gems_glob.join('*', 'ext'), 'Makefile')
+      find_and_remove_directories(vendor_gems_glob.join('*', 'ext'), 'tmp')
     end
 
     def strip_java_files
-      @shell.exec(%(find #{vendor_gems_glob} -name "*.java" -exec rm {} \\; 2> /dev/null))
+      find_and_remove_files(vendor_gems_glob, '*.java')
     end
 
     def strip_git_files
-      @shell.exec(%(find #{vendor_gems_glob} -name ".git" -type d 2> /dev/null | xargs rm -rf))
-      @shell.exec(%(find #{bundler_gems_glob} -name ".git" -type d 2> /dev/null | xargs rm -rf))
+      find_and_remove_directories(vendor_gems_glob, '.git')
+      find_and_remove_directories(bundler_gems_glob, '.git')
     end
 
     def strip_from_gems(things)
@@ -128,6 +128,14 @@ module Tara
         FileUtils.rm_r(Dir[vendor_gems_glob.join('*', thing)])
         FileUtils.rm_r(Dir[bundler_gems_glob.join('*', thing)])
       end
+    end
+
+    def find_and_remove_files(dir, glob)
+      @shell.exec(%(find #{dir} -name "#{glob}" -type f -exec rm -f "{}" \\; 2> /dev/null || true))
+    end
+
+    def find_and_remove_directories(dir, glob)
+      @shell.exec(%(find #{dir} -name "#{glob}" -type d -exec rm -rf "{}" \\; 2> /dev/null || true))
     end
 
     def lib_path
