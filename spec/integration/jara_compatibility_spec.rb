@@ -26,7 +26,7 @@ describe 'Jara compatibility' do
       [
         'git init --bare ../repo.git',
         'git init',
-        'git add . && git commit -m "Initial commit"',
+        'git add . && git commit -n -m "Initial commit"',
         'git remote add origin ../repo.git',
         'git push -u origin master'
       ].each do |command|
