@@ -8,6 +8,7 @@ module Tara
       @fetcher = fetcher
       @without_groups = options[:without_groups]
       @app_dir = Pathname.new(options[:app_dir])
+      @bundle_env = 'BUNDLE_IGNORE_CONFIG=1' if options[:bundle_ignore_config]
       @shell = options[:shell] || Shell
     end
 
@@ -27,7 +28,7 @@ module Tara
 
     def bundler_command
       @bundler_command ||= begin
-        command = 'BUNDLE_IGNORE_CONFIG=1 bundle install --jobs 4 --path vendor'
+        command = "#{@bundle_env} bundle install --jobs 4 --path vendor"
         command << %( --without #{@without_groups.join(' ')}) if @without_groups.any?
         command
       end
