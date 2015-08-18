@@ -20,8 +20,12 @@ describe 'bin/tara' do
     @download_dir ||= ENV['TARA_DOWNLOAD_DIR'] || File.expand_path('../../../tmp/downloads', __FILE__)
   end
 
+  def traveling_ruby_version
+    ENV['TRAVELING_RUBY_VERSION']
+  end
+
   def argv
-    %W[--app-name #{app_name} --app-dir #{app_dir} --download-dir #{download_dir} --target #{detect_target}]
+    %W[--app-name #{app_name} --app-dir #{app_dir} --download-dir #{download_dir} --target #{detect_target} --traveling-ruby-version #{traveling_ruby_version}]
   end
 
   def archive_path

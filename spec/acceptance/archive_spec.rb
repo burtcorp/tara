@@ -34,6 +34,10 @@ module Tara
         e.read
       end
 
+      def traveling_ruby_version
+        ENV['TRAVELING_RUBY_VERSION']
+      end
+
       before :all do
         WebMock.disable!
       end
@@ -45,7 +49,7 @@ module Tara
 
       context 'with standard options' do
         before :all do
-          create_archive(tmpdir, target: detect_target, download_dir: download_dir)
+          create_archive(tmpdir, target: detect_target, download_dir: download_dir, traveling_ruby_version: traveling_ruby_version)
           extract_archive
         end
 
@@ -141,7 +145,8 @@ module Tara
             executables: %w[bin/* ext/*],
             target: detect_target,
             download_dir: download_dir,
-            without_groups: %w[ignore]
+            without_groups: %w[ignore],
+            traveling_ruby_version: traveling_ruby_version,
           })
           extract_archive
         end
