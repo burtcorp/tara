@@ -71,6 +71,11 @@ By default Tara will include all Ruby files in `lib`, though it's possible to
 override which files that'll be included by passing the `files` option with a
 list of globs to `Tara::Archive.new`.
 
+One might run into issues when running Bundler while packaging an application,
+and it might be related to the global Bundler configuration.
+If that is the case then one can choose to ignore the global Bundler
+configuration by passing the `bundle_ignore_config`.
+
 ### Executables
 
 Due to how archives are packaged, executables (scripts usually placed in the
