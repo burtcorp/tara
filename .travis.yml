@@ -5,11 +5,14 @@ before_script:
   - git config --global user.name "Nobody Doe"
 script: bundle exec rspec
 env:
-  TARA_DOWNLOAD_DIR="$HOME/.tara/downloads"
+  global: TARA_DOWNLOAD_DIR="$HOME/.tara/downloads"
 cache:
   bundler: true
   directories:
     - $HOME/.tara/downloads
-rvm:
-  - ruby-2.1.5
-  - ruby-2.2.0
+matrix:
+  include:
+    - rvm: ruby-2.1.5
+      env: TRAVELING_RUBY_VERSION=20150210
+    - rvm: ruby-2.2.2
+      env: TRAVELING_RUBY_VERSION=20150715

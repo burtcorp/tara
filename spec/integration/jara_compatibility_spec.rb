@@ -35,8 +35,12 @@ describe 'Jara compatibility' do
     end
   end
 
+  def traveling_ruby_version
+    ENV['TRAVELING_RUBY_VERSION']
+  end
+
   before :all do
-    create_archive(tmpdir, target: detect_target, download_dir: download_dir)
+    create_archive(tmpdir, target: detect_target, download_dir: download_dir, traveling_ruby_version: traveling_ruby_version)
   end
 
   after :all do
