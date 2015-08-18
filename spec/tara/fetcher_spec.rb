@@ -6,7 +6,7 @@ require 'spec_helper'
 module Tara
   describe Fetcher do
     let :fetcher do
-      described_class.new(download_dir, 'osx', '20150210', tr_release_url: 'http://localhost:8888/releases')
+      described_class.new(download_dir, 'osx', '20150715', tr_release_url: 'http://localhost:8888/releases')
     end
 
     let :download_dir do
@@ -14,11 +14,11 @@ module Tara
     end
 
     let :tr_archive_name do
-      %(traveling-ruby-20150210-#{RUBY_VERSION}-osx.tar.gz)
+      %(traveling-ruby-20150715-#{RUBY_VERSION}-osx.tar.gz)
     end
 
     let :tr_gem_name do
-      %(traveling-ruby-gems-20150210-#{RUBY_VERSION}-osx/thin-1.6.3.tar.gz)
+      %(traveling-ruby-gems-20150715-#{RUBY_VERSION}-osx/thin-1.6.3.tar.gz)
     end
 
     before :all do
@@ -35,7 +35,7 @@ module Tara
 
     describe '#fetch_ruby' do
       let :local_uri do
-        %(ruby-20150210-#{RUBY_VERSION}-osx.tar.gz)
+        %(ruby-20150715-#{RUBY_VERSION}-osx.tar.gz)
       end
 
       context 'when the specified Ruby version exist' do
@@ -96,7 +96,7 @@ module Tara
 
     describe '#fetch_native_gem' do
       let :local_uri do
-        %(thin-1.6.3-20150210-#{RUBY_VERSION}-osx.tar.gz)
+        %(thin-1.6.3-20150715-#{RUBY_VERSION}-osx.tar.gz)
       end
 
       context 'when the specified version exist' do

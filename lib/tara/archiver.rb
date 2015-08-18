@@ -33,7 +33,7 @@ module Tara
     #   expanded when including executables in archive. Should be relative from `:app_dir`.
     # @option config [String] :target (linux-x86_64) target platform that the archive will
     #   be created for. Should be one of "linux-x86", "linux-x86_64", or "osx".
-    # @option config [String] :traveling_ruby_version (20150210) release of Traveling Ruby
+    # @option config [String] :traveling_ruby_version (20150715) release of Traveling Ruby
     #   that should be used.
     # @option config [Array<String>] :without_groups (%w[development test]) list of gem
     #   groups to exclude from the archive.
