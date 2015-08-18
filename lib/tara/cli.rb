@@ -38,6 +38,10 @@ module Tara
         opts.on('--target TARGET', 'Target platform for archive') do |target|
           options[:target] = target
         end
+
+        opts.on('--traveling-ruby-version TARGET', 'Release of Traveling Ruby that should be used.') do |traveling_ruby_version|
+          options[:traveling_ruby_version] = traveling_ruby_version
+        end
       end
       parser.parse(@argv)
       options
