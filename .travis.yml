@@ -14,5 +14,7 @@ matrix:
   include:
     - rvm: ruby-2.1.5
       env: TRAVELING_RUBY_VERSION=20150210
+    - rvm: ruby-2.1.6
+      env: TRAVELING_RUBY_VERSION=20150715
     - rvm: ruby-2.2.2
       env: TRAVELING_RUBY_VERSION=20150715
