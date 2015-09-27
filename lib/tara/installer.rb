@@ -21,6 +21,7 @@ module Tara
       strip_leftovers
       strip_java_files
       strip_git_files
+      strip_empty_directories
       create_bundler_config
     end
 
@@ -129,6 +130,10 @@ module Tara
         FileUtils.rm_r(Dir[vendor_gems_glob.join('*', thing)])
         FileUtils.rm_r(Dir[bundler_gems_glob.join('*', thing)])
       end
+    end
+
+    def strip_empty_directories
+      @shell.exec(%(find #{@package_dir} -type d -empty -delete 2> /dev/null || true))
     end
 
     def find_and_remove_files(dir, glob)
