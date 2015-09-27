@@ -148,6 +148,7 @@ module Tara
             download_dir: download_dir,
             without_groups: %w[ignore],
             traveling_ruby_version: traveling_ruby_version,
+            build_command: 'mkdir -p hello/world && echo "hello" > hello/world/echo',
           })
           extract_archive
         end
@@ -170,6 +171,10 @@ module Tara
         it 'correctly creates wrapper scripts for gem executables' do
           output = %x(cd #{File.dirname(archive_path)} && ./rackup --version)
           expect(output.strip).to eq('Rack 1.3 (Release: 1.5)')
+        end
+
+        it 'runs specified `build_command`' do
+          expect(listing).to include('hello/world/echo')
         end
       end
     end

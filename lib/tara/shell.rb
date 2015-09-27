@@ -10,6 +10,12 @@ module Tara
         raise ExecError, %(Command `#{command}` failed with output: #{output})
       end
       output
+    rescue Errno::ENOENT => e
+      raise ExecError, %(Command `#{command}` failed with output: #{e.message})
+    end
+
+    def self.exec_with_env(command, env)
+      self.exec(env.map { |k, v| [k, v].join('=') }.join(' ') << ' ' << command)
     end
   end
 end
