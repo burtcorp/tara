@@ -147,6 +147,9 @@ module Tara
     def copy_file(project_dir, package_dir, file)
       relative_file = file.relative_path_from(project_dir)
       if relative_file.directory?
+        unless (dirname = relative_file.dirname) == DOT_PATH
+          FileUtils.mkdir_p(package_dir.join(dirname))
+        end
         FileUtils.cp_r(file, package_dir.join(relative_file))
       else
         unless (dirname = relative_file.dirname) == DOT_PATH
