@@ -53,7 +53,7 @@ describe 'Jara compatibility' do
 
   it 'includes executables' do
     extract_archive
-    output = %x(cd #{File.dirname(archive_path)} && ./exapp)
+    output = %x(cd #{File.dirname(archive_path)} && ./exapp 2> /dev/null)
     expect(output).to match(/Running exapp/)
   end
 end

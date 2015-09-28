@@ -63,7 +63,7 @@ module Tara
 
         it 'creates a wrapper for each executable and places it at the top level' do
           expect(listing).to include('exapp')
-          output = %x(cd #{File.dirname(archive_path)} && ./exapp)
+          output = %x(cd #{File.dirname(archive_path)} && ./exapp 2> /dev/null)
           expect(output).to match(/Running exapp/)
         end
 
