@@ -11,7 +11,7 @@ module Tara
       @target = target
       @tr_version = tr_version
       @ruby_version = options[:ruby_version] || RUBY_VERSION
-      @release_url = options[:tr_release_url] || 'http://d6r77u77i8pq3.cloudfront.net/releases'
+      @release_url = options[:tr_release_url] || 'https://d6r77u77i8pq3.cloudfront.net/releases'
       @shell = options[:shell] || Shell
     end
 
@@ -44,7 +44,7 @@ module Tara
     def fetch(remote_uri, local_uri, limit=10)
       unless File.exist?(local_uri)
         uri = URI(remote_uri)
-        Net::HTTP.start(uri.host, uri.port) do |http|
+        Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
           http.request(Net::HTTP::Get.new(uri)) do |response|
             case response
             when Net::HTTPSuccess
