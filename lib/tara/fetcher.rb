@@ -48,7 +48,7 @@ module Tara
           http.request(Net::HTTP::Get.new(uri)) do |response|
             case response
             when Net::HTTPSuccess
-              File.open(local_uri, 'w') do |f|
+              File.open(local_uri, 'wb') do |f|
                 response.read_body do |chunk|
                   f.write(chunk)
                 end
