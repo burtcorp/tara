@@ -2,10 +2,9 @@
 
 module Tara
   # @private
-  class Shim
-    def initialize(dirpath, name)
-      @dirpath = dirpath
-      @name = name
+  class BaseShim
+    def initialize(command)
+      @command = command
     end
 
     def write(io)
@@ -21,8 +20,22 @@ module Tara
         SELF_DIR=$(dirname "$0")
         export BUNDLE_GEMFILE="$SELF_DIR/lib/vendor/Gemfile"
         unset BUNDLE_IGNORE_CONFIG
-        exec "$SELF_DIR/lib/ruby/bin/ruby" -rbundler/setup "$SELF_DIR/#{@dirpath}/#{@name}" "$@"
+        exec "$SELF_DIR/lib/ruby/bin/ruby" -rbundler/setup #{@command}
       EOH
+    end
+  end
+
+  # @private
+  class Shim < BaseShim
+    def initialize(dirpath, name)
+      super(%("$SELF_DIR/#{dirpath}/#{name}" "$@"))
+    end
+  end
+
+  # @private
+  class GemShim < BaseShim
+    def initialize(gem_name, exec_name)
+     super(%(-e "load Gem.bin_path('#{gem_name}', '#{exec_name}')" -- "$@"))
     end
   end
 end

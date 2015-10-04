@@ -143,6 +143,7 @@ module Tara
           create_archive(tmpdir, {
             files: %w[lib/*],
             executables: %w[bin/* ext/*],
+            gem_executables: [['rack', 'rackup']],
             target: detect_target,
             download_dir: download_dir,
             without_groups: %w[ignore],
@@ -164,6 +165,11 @@ module Tara
           expect(listing).to include('nonbin')
           output = %x(cd #{File.dirname(archive_path)} && ./nonbin)
           expect(output.strip).to eq('Hello world')
+        end
+
+        it 'correctly creates wrapper scripts for gem executables' do
+          output = %x(cd #{File.dirname(archive_path)} && ./rackup --version)
+          expect(output.strip).to eq('Rack 1.3 (Release: 1.5)')
         end
       end
     end

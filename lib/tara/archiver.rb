@@ -31,6 +31,8 @@ module Tara
     #   expanded when including source files in archive. Should be relative from `:app_dir`.
     # @option config [Array<String>] :executables (%w[bin/*]) list of globs that will be
     #   expanded when including executables in archive. Should be relative from `:app_dir`.
+    # @option config [Array<String, String>] :gem_executables ([]) list of gem and exec name
+    #   pairs which will be included as executables in archive.
     # @option config [String] :target (linux-x86_64) target platform that the archive will
     #   be created for. Should be one of "linux-x86", "linux-x86_64", or "osx".
     # @option config [String] :traveling_ruby_version (20150210) release of Traveling Ruby
