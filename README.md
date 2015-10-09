@@ -39,8 +39,7 @@ Examples of gems with native extensions are `thin`, `eventmachine` and
 
 Tara will automatically find gems with native extensions and attempt to download
 a precompiled version. and in the case that the specific version doesn't exist
-In the case that the specific version doesn't exist, it'll raise an error and
-thus refusing to build an archive at all.
+it'll raise an error and thus refuse to build an archive at all.
 
 ## Usage
 
