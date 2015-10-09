@@ -91,9 +91,7 @@ module Tara
         install_dependencies(package_dir, fetcher)
         copy_source(project_dir, package_dir)
         copy_executables(project_dir, package_dir)
-        @config[:gem_executables].each do |gem_name, exec_name|
-          create_gem_shim(package_dir, gem_name, exec_name)
-        end
+        create_gem_shims(package_dir)
         Dir.chdir(tmp_dir) do
           create_archive(build_dir)
         end
@@ -123,6 +121,12 @@ module Tara
             create_shim(package_dir, relative_executable)
           end
         end
+      end
+    end
+
+    def create_gem_shims(package_dir)
+      @config[:gem_executables].each do |gem_name, exec_name|
+        create_gem_shim(package_dir, gem_name, exec_name)
       end
     end
 
