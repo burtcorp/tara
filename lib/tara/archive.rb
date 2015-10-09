@@ -46,6 +46,8 @@ module Tara
     #   expanded when including source files in archive. Should be relative from :app_dir.
     # @option config [Array<String>] :executables (%w[bin/*]) list of globs that will be
     #   expanded when including executables in archive. Should be relative from :app_dir.
+    # @option config [Array<String, String>] :gem_executables ([]) list of gem and exec name
+    #   pairs which will be included as executables in archive.
     # @option config [String] :target (linux-x86_64) target platform that the archive will
     #   be created for. Should be one of "linux-x86", "linux-x86_64", or "osx".
     # @option config [String] :traveling_ruby_version (20150210) release of Traveling Ruby
@@ -62,6 +64,7 @@ module Tara
       @config[:archive_name] ||= @config[:app_name] + '.tgz'
       @config[:files] ||= %w[lib/**/*.rb]
       @config[:executables] ||= %w[bin/*]
+      @config[:gem_executables] ||= []
       @config[:target] ||= 'linux-x86_64'
       @config[:traveling_ruby_version] ||= '20150210'
       @config[:without_groups] ||= %w[development test]
@@ -88,6 +91,7 @@ module Tara
         install_dependencies(package_dir, fetcher)
         copy_source(project_dir, package_dir)
         copy_executables(project_dir, package_dir)
+        create_gem_shims(package_dir)
         Dir.chdir(tmp_dir) do
           create_archive(build_dir)
         end
@@ -120,6 +124,12 @@ module Tara
       end
     end
 
+    def create_gem_shims(package_dir)
+      @config[:gem_executables].each do |gem_name, exec_name|
+        create_gem_shim(package_dir, gem_name, exec_name)
+      end
+    end
+
     def create_archive(build_dir)
       Shell.exec('tar -czf %s %s' % [@config[:archive_name], Dir['*'].join(' ')])
       FileUtils.mkdir_p(build_dir)
@@ -148,7 +158,14 @@ module Tara
 
     def create_shim(package_dir, executable)
       shim_path = package_dir.join(executable.basename)
-      shim = Shim.new(*executable.split)
+      shim = ExecShim.new(*executable.split)
+      File.open(shim_path, 'w') { |f| shim.write(f) }
+      FileUtils.chmod(0755, shim_path)
+    end
+
+    def create_gem_shim(package_dir, gem_name, exec_name)
+      shim_path = package_dir.join(exec_name)
+      shim = GemShim.new(gem_name, exec_name)
       File.open(shim_path, 'w') { |f| shim.write(f) }
       FileUtils.chmod(0755, shim_path)
     end
