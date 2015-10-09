@@ -2,7 +2,7 @@
 
 module Tara
   # @private
-  class BaseShim
+  class Shim
     def initialize(command)
       @command = command
     end
@@ -26,14 +26,14 @@ module Tara
   end
 
   # @private
-  class Shim < BaseShim
+  class ExecShim < Shim
     def initialize(dirpath, name)
       super(%("$SELF_DIR/#{dirpath}/#{name}" "$@"))
     end
   end
 
   # @private
-  class GemShim < BaseShim
+  class GemShim < Shim
     def initialize(gem_name, exec_name)
      super(%(-e "load Gem.bin_path('#{gem_name}', '#{exec_name}')" -- "$@"))
     end

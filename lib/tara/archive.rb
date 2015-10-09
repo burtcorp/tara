@@ -154,7 +154,7 @@ module Tara
 
     def create_shim(package_dir, executable)
       shim_path = package_dir.join(executable.basename)
-      shim = Shim.new(*executable.split)
+      shim = ExecShim.new(*executable.split)
       File.open(shim_path, 'w') { |f| shim.write(f) }
       FileUtils.chmod(0755, shim_path)
     end
