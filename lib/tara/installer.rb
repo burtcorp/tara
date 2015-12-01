@@ -152,10 +152,6 @@ module Tara
       @ruby_vendor_path ||= vendor_path.join('ruby')
     end
 
-    def bundle_path
-      @bundle_path ||= vendor_path.join('.bundle')
-    end
-
     def ruby_path
       @ruby_path ||= lib_path.join('ruby')
     end
