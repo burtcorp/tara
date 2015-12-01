@@ -8,8 +8,9 @@ module Tara
       @fetcher = fetcher
       @without_groups = options[:without_groups]
       @app_dir = Pathname.new(options[:app_dir])
-      @bundle_env = 'BUNDLE_IGNORE_CONFIG=1' if options[:bundle_ignore_config]
+      @bundle_env = bundle_env(options[:bundle_ignore_config])
       @shell = options[:shell] || Shell
+      @build_command = options[:build_command]
     end
 
     def execute
@@ -22,37 +23,42 @@ module Tara
       strip_java_files
       strip_git_files
       strip_empty_directories
-      create_bundler_config
     end
 
     private
 
+    def bundle_env(ignore_config)
+      env = {'BUNDLE_GEMFILE' => 'lib/vendor/Gemfile'}
+      env['BUNDLE_IGNORE_CONFIG'] = '1' if ignore_config
+      env
+    end
+
     def bundler_command
       @bundler_command ||= begin
-        command = "#{@bundle_env} bundle install --jobs 4 --path vendor"
+        command = 'bundle install --jobs 4 --path . --gemfile lib/vendor/Gemfile'
         command << %( --without #{@without_groups.join(' ')}) if @without_groups.any?
         command
       end
     end
 
     def bundle_gems
-      FileUtils.mkdir_p(lib_path)
-      Dir.mktmpdir do |tmpdir|
-        copy_gem_files(Pathname.new(tmpdir))
-        Dir.chdir(tmpdir) do
-          Bundler.with_clean_env do
-            @shell.exec(bundler_command)
+      FileUtils.mkdir_p(vendor_path)
+      copy_gem_files(vendor_path)
+      Dir.chdir(@package_dir) do
+        Bundler.with_clean_env do
+          @shell.exec_with_env(bundler_command, @bundle_env)
+          if @build_command
+            @shell.exec_with_env(@build_command, @bundle_env)
           end
-          Dir['vendor/*/*/cache/*'].each do |cached_file|
-            FileUtils.rm_rf(cached_file)
-          end
-          Dir['vendor/ruby/*/extensions/*'].each do |ext_file|
-            FileUtils.rm_rf(ext_file)
-          end
-          %w[o so bundle].each do |ext|
-            find_and_remove_files('vendor/ruby/*/gems', %(*.#{ext}))
-          end
-          FileUtils.cp_r('vendor', lib_path, preserve: true)
+        end
+        Dir['lib/vendor/*/*/cache/*'].each do |cache_file|
+          FileUtils.rm_rf(cache_file)
+        end
+        Dir['lib/vendor/ruby/*/extensions/*'].each do |ext_file|
+          FileUtils.rm_rf(ext_file)
+        end
+        %w[o so bundle].each do |ext|
+          find_and_remove_files('lib/vendor/ruby/*/gems', %(*.#{ext}))
         end
       end
     end
@@ -86,16 +92,6 @@ module Tara
         if File.exist?(@app_dir.join(file))
           FileUtils.cp(@app_dir.join(file), path.join(File.basename(file)))
         end
-      end
-    end
-
-    def create_bundler_config
-      copy_gem_files(vendor_path)
-      FileUtils.mkdir_p(bundle_path)
-      File.open(bundle_path.join('config'), 'w+') do |f|
-        f.puts(%(BUNDLE_PATH: .))
-        f.puts(%(BUNDLE_WITHOUT: #{@without_groups.join(':')})) if @without_groups.any?
-        f.puts(%(BUNDLE_DISABLE_SHARED_GEMS: '1'))
       end
     end
 

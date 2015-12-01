@@ -88,10 +88,10 @@ module Tara
         project_dir = Pathname.new(@config[:app_dir])
         package_dir = Pathname.new(tmp_dir)
         build_dir = Pathname.new(@config[:build_dir])
-        install_dependencies(package_dir, fetcher)
         copy_source(project_dir, package_dir)
         copy_executables(project_dir, package_dir)
         create_gem_shims(package_dir)
+        install_dependencies(package_dir, fetcher)
         Dir.chdir(tmp_dir) do
           create_archive(build_dir)
         end
