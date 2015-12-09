@@ -150,7 +150,6 @@ module Tara
         unless (dirname = relative_file.dirname) == DOT_PATH
           FileUtils.mkdir_p(package_dir.join(dirname))
         end
-        FileUtils.cp_r(file, package_dir.join(relative_file))
       else
         unless (dirname = relative_file.dirname) == DOT_PATH
           FileUtils.mkdir_p(package_dir.join(dirname))
