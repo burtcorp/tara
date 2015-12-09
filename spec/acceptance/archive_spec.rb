@@ -141,7 +141,7 @@ module Tara
       context 'with custom options' do
         before :all do
           create_archive(tmpdir, {
-            files: %w[lib/*],
+            files: %w[lib/**/*],
             executables: %w[bin/* ext/*],
             gem_executables: [['rack', 'rackup']],
             target: detect_target,
@@ -155,6 +155,11 @@ module Tara
 
         it 'recursively includes source files' do
           expect(listing).to include('lib/exapp/cli.rb')
+        end
+
+        it 'does not get confused by deep directory trees' do
+          expect(listing).to include('lib/exapp/data/reader.rb')
+          expect(listing).to_not include('lib/exapp/data/data/reader.rb')
         end
 
         it 'excludes gems in given `without_groups` option' do
