@@ -81,6 +81,8 @@ module Tara
           spec
         end
       end
+    rescue Bundler::GemNotFound => e
+      []
     end
 
     def copy_local_gems
