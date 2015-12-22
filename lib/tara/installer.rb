@@ -1,5 +1,17 @@
 # encoding: utf-8
 
+require 'bundler'
+module Bundler
+  class Definition
+    def add_optional_group(group)
+      @optional_groups << group.to_sym
+    end
+    def optional_groups
+      @optional_groups
+    end
+  end
+end
+
 module Tara
   # @private
   class Installer
@@ -67,6 +79,9 @@ module Tara
     def find_installed_gems
       Bundler.with_clean_env do
         definition = Bundler::Definition.build('lib/vendor/Gemfile', 'lib/vendor/Gemfile.lock', false)
+        @without_groups.each do |group|
+          definition.add_optional_group(group)
+        end
         specs = definition.specs.map do |gem_spec|
           spec = {
             :name => gem_spec.name,
