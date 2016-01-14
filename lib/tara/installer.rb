@@ -66,6 +66,7 @@ module Tara
 
     def find_installed_gems
       definition = Bundler::Definition.build('lib/vendor/Gemfile', 'lib/vendor/Gemfile.lock', false)
+      return [] unless definition.has_optional_groups?
       @without_groups.each do |group|
         definition.add_optional_group(group)
       end
