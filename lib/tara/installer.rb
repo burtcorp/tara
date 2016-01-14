@@ -1,17 +1,5 @@
 # encoding: utf-8
 
-require 'bundler'
-module Bundler
-  class Definition
-    def add_optional_group(group)
-      @optional_groups << group.to_sym
-    end
-    def optional_groups
-      @optional_groups
-    end
-  end
-end
-
 module Tara
   # @private
   class Installer
@@ -57,8 +45,8 @@ module Tara
       FileUtils.mkdir_p(vendor_path)
       copy_gem_files(vendor_path)
       Dir.chdir(@package_dir) do
-        copy_local_gems
         Bundler.with_clean_env do
+          copy_local_gems
           @shell.exec_with_env(bundler_command, @bundle_env)
           if @build_command
             @shell.exec_with_env(@build_command, @bundle_env)
@@ -77,23 +65,20 @@ module Tara
     end
 
     def find_installed_gems
-      Bundler.with_clean_env do
-        definition = Bundler::Definition.build('lib/vendor/Gemfile', 'lib/vendor/Gemfile.lock', false)
-        @without_groups.each do |group|
-          definition.add_optional_group(group)
-        end
-        specs = definition.specs.map do |gem_spec|
-          spec = {
+      definition = Bundler::Definition.build('lib/vendor/Gemfile', 'lib/vendor/Gemfile.lock', false)
+      @without_groups.each do |group|
+        definition.add_optional_group(group)
+      end
+      definition.specs.each_with_object([]) do |gem_spec, specs|
+        if gem_spec.full_gem_path.start_with?(Bundler.bundle_path.to_s) # Local gem
+          specs << {
             :name => gem_spec.name,
             :full_name => gem_spec.full_name,
             :full_gem_path => gem_spec.full_gem_path,
             :spec_file => gem_spec.spec_file,
             :bin_dir => gem_spec.bin_dir,
+            :relative_path => Pathname.new(gem_spec.full_gem_path).relative_path_from(Bundler.bundle_path).to_s,
           }
-          if spec[:full_gem_path].start_with?(Bundler.bundle_path.to_s) # Local gem
-            spec[:relative_path] = Pathname.new(spec[:full_gem_path]).relative_path_from(Bundler.bundle_path).to_s
-          end
-          spec
         end
       end
     rescue Bundler::GemNotFound => e
@@ -104,19 +89,16 @@ module Tara
       local_gems = find_installed_gems
       target_directory = File.join(@package_dir, 'lib/vendor', Bundler.ruby_scope)
 
-      Bundler.with_clean_env do
-        spec_dir = File.join(target_directory, 'specifications')
-        bin_dir = File.join(target_directory, 'bin')
-        FileUtils.mkdir_p(spec_dir)
-        FileUtils.mkdir_p(bin_dir)
-        FileUtils.mkdir_p(File.join(target_directory, 'gems'))
-        FileUtils.mkdir_p(File.join(target_directory, 'bundler/gems'))
+      spec_dir = File.join(target_directory, 'specifications')
+      bin_dir = File.join(target_directory, 'bin')
+      FileUtils.mkdir_p(spec_dir)
+      FileUtils.mkdir_p(bin_dir)
+      FileUtils.mkdir_p(File.join(target_directory, 'gems'))
+      FileUtils.mkdir_p(File.join(target_directory, 'bundler', 'gems'))
 
-        local_gems.each do |gemspec|
-          next unless gemspec[:relative_path]
-          FileUtils.cp_r(gemspec[:full_gem_path], File.join(target_directory, gemspec[:relative_path]))
-          FileUtils.cp(gemspec[:spec_file], spec_dir) if File.exists?(gemspec[:spec_file])
-        end
+      local_gems.each do |gemspec|
+        FileUtils.cp_r(gemspec[:full_gem_path], File.join(target_directory, gemspec[:relative_path]))
+        FileUtils.cp(gemspec[:spec_file], spec_dir) if File.exists?(gemspec[:spec_file])
       end
     end
 
