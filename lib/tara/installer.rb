@@ -98,6 +98,7 @@ module Tara
     end
 
     def copy_local_gems
+      git_gems = find_all_git_gems
       local_gems = find_installed_gems
       target_directory = File.join(@package_dir, 'lib/vendor', Bundler.ruby_scope)
 
@@ -113,7 +114,7 @@ module Tara
         FileUtils.cp(gemspec[:spec_file], spec_dir) if File.exists?(gemspec[:spec_file])
       end
 
-      find_all_git_gems.each do |relative_path|
+      git_gems.each do |relative_path|
         FileUtils.mkdir_p(File.join(target_directory, relative_path))
       end
     end
