@@ -86,6 +86,17 @@ module Tara
       []
     end
 
+    def find_all_git_gems
+      definition = Bundler::Definition.build('lib/vendor/Gemfile', 'lib/vendor/Gemfile.lock', false)
+      definition.specs.each_with_object([]) do |gem_spec, git_list|
+        if %r{(.+bundler/gems/.+-[a-f0-9]{7,12})}.match(gem_spec.full_gem_path)
+          git_list << Pathname.new(gem_spec.full_gem_path).relative_path_from(Bundler.bundle_path).to_s
+        end
+      end
+    rescue Bundler::GemNotFound => e
+      []
+    end
+
     def copy_local_gems
       local_gems = find_installed_gems
       target_directory = File.join(@package_dir, 'lib/vendor', Bundler.ruby_scope)
@@ -100,6 +111,10 @@ module Tara
       local_gems.each do |gemspec|
         FileUtils.cp_r(gemspec[:full_gem_path], File.join(target_directory, gemspec[:relative_path]))
         FileUtils.cp(gemspec[:spec_file], spec_dir) if File.exists?(gemspec[:spec_file])
+      end
+
+      find_all_git_gems.each do |relative_path|
+        FileUtils.mkdir_p(File.join(target_directory, relative_path))
       end
     end
 
