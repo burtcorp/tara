@@ -35,7 +35,7 @@ module Tara
 
     def bundler_command
       @bundler_command ||= begin
-        command = 'bundle install --jobs 4 --path . --gemfile lib/vendor/Gemfile'
+        command = 'bundle install --jobs 4 --frozen --path . --gemfile lib/vendor/Gemfile'
         command << %( --without #{@without_groups.join(' ')}) if @without_groups.any?
         command
       end
