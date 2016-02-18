@@ -73,11 +73,8 @@ module Tara
       definition.specs.each_with_object([]) do |gem_spec, specs|
         if gem_spec.full_gem_path.start_with?(Bundler.bundle_path.to_s) # Local gem
           specs << {
-            :name => gem_spec.name,
-            :full_name => gem_spec.full_name,
             :full_gem_path => gem_spec.full_gem_path,
             :spec_file => gem_spec.spec_file,
-            :bin_dir => gem_spec.bin_dir,
             :relative_path => Pathname.new(gem_spec.full_gem_path).relative_path_from(Bundler.bundle_path).to_s,
           }
         end
@@ -91,9 +88,8 @@ module Tara
       target_directory = File.join(@package_dir, 'lib/vendor', Bundler.ruby_scope)
 
       spec_dir = File.join(target_directory, 'specifications')
-      bin_dir = File.join(target_directory, 'bin')
       FileUtils.mkdir_p(spec_dir)
-      FileUtils.mkdir_p(bin_dir)
+      FileUtils.mkdir_p(File.join(target_directory, 'bin'))
       FileUtils.mkdir_p(File.join(target_directory, 'gems'))
       FileUtils.mkdir_p(File.join(target_directory, 'bundler', 'gems'))
 
