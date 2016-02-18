@@ -73,7 +73,7 @@ describe 'bin/tara' do
     end
 
     it 'prints error message to given stream' do
-      Tara::Cli.new([], io).run
+      Tara::Cli.new(argv, io).run
       expect(io.string).to match(/Error during packaging: .+/)
     end
   end

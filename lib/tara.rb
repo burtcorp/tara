@@ -3,7 +3,7 @@
 require 'bundler'
 require 'pathname'
 require 'tmpdir'
-
+require 'ext/bundler'
 
 module Tara
   TaraError = Class.new(StandardError)

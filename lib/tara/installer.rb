@@ -35,7 +35,7 @@ module Tara
 
     def bundler_command
       @bundler_command ||= begin
-        command = 'bundle install --jobs 4 --path . --gemfile lib/vendor/Gemfile'
+        command = 'bundle install --jobs 4 --frozen --path . --gemfile lib/vendor/Gemfile'
         command << %( --without #{@without_groups.join(' ')}) if @without_groups.any?
         command
       end
@@ -46,6 +46,7 @@ module Tara
       copy_gem_files(vendor_path)
       Dir.chdir(@package_dir) do
         Bundler.with_clean_env do
+          copy_local_gems
           @shell.exec_with_env(bundler_command, @bundle_env)
           if @build_command
             @shell.exec_with_env(@build_command, @bundle_env)
@@ -60,6 +61,41 @@ module Tara
         %w[o so bundle].each do |ext|
           find_and_remove_files('lib/vendor/ruby/*/gems', %(*.#{ext}))
         end
+      end
+    end
+
+    def find_installed_gems
+      definition = Bundler::Definition.build('lib/vendor/Gemfile', 'lib/vendor/Gemfile.lock', false)
+      return [] unless definition.has_optional_groups?
+      @without_groups.each do |group|
+        definition.add_optional_group(group)
+      end
+      definition.specs.each_with_object([]) do |gem_spec, specs|
+        if gem_spec.full_gem_path.start_with?(Bundler.bundle_path.to_s) # Local gem
+          specs << {
+            :full_gem_path => gem_spec.full_gem_path,
+            :spec_file => gem_spec.spec_file,
+            :relative_path => Pathname.new(gem_spec.full_gem_path).relative_path_from(Bundler.bundle_path).to_s,
+          }
+        end
+      end
+    rescue Bundler::GemNotFound => e
+      []
+    end
+
+    def copy_local_gems
+      local_gems = find_installed_gems
+      target_directory = File.join(@package_dir, 'lib/vendor', Bundler.ruby_scope)
+
+      spec_dir = File.join(target_directory, 'specifications')
+      FileUtils.mkdir_p(spec_dir)
+      FileUtils.mkdir_p(File.join(target_directory, 'bin'))
+      FileUtils.mkdir_p(File.join(target_directory, 'gems'))
+      FileUtils.mkdir_p(File.join(target_directory, 'bundler', 'gems'))
+
+      local_gems.each do |gemspec|
+        FileUtils.cp_r(gemspec[:full_gem_path], File.join(target_directory, gemspec[:relative_path]))
+        FileUtils.cp(gemspec[:spec_file], spec_dir) if File.exists?(gemspec[:spec_file])
       end
     end
 
