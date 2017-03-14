@@ -25,7 +25,8 @@ describe 'bin/tara' do
   end
 
   def argv
-    %W[--app-name #{app_name} --app-dir #{app_dir} --download-dir #{download_dir} --target #{detect_target} --traveling-ruby-version #{traveling_ruby_version}]
+    traveling_ruby_version_flag = traveling_ruby_version ? "--traveling-ruby-version #{traveling_ruby_version}" : ''
+    %W[--app-name #{app_name} --app-dir #{app_dir} --download-dir #{download_dir} --target #{detect_target} #{traveling_ruby_version_flag}]
   end
 
   def archive_path
