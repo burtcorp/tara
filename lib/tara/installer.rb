@@ -124,9 +124,9 @@ module Tara
     end
 
     def copy_gem_files(path)
-      Dir['Gemfile', 'Gemfile.lock', '*.gemspec'].each do |file|
-        if File.exist?(@app_dir.join(file))
-          FileUtils.cp(@app_dir.join(file), path.join(File.basename(file)))
+      Dir.chdir(@app_dir) do
+        Dir['Gemfile', 'Gemfile.lock', '*.gemspec'].each do |file|
+          FileUtils.cp(file, path.join(File.basename(file)))
         end
       end
     end
