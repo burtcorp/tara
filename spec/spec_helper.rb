@@ -2,6 +2,7 @@
 
 require 'support/detect_target'
 require 'support/archive_helpers'
+require 'support/set_tr_version'
 require 'webmock/rspec'
 require 'rubygems/package'
 require 'zlib'
