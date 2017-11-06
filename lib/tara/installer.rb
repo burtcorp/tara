@@ -9,6 +9,7 @@ module Tara
       @without_groups = options[:without_groups]
       @app_dir = Pathname.new(options[:app_dir])
       @bundle_env = bundle_env(options[:bundle_ignore_config])
+      @bundle_jobs = options[:bundle_jobs] || 4
       @shell = options[:shell] || Shell
       @build_command = options[:build_command]
     end
@@ -35,7 +36,7 @@ module Tara
 
     def bundler_command
       @bundler_command ||= begin
-        command = 'bundle install --jobs 4 --frozen --path . --gemfile lib/vendor/Gemfile'
+        command = "bundle install --jobs #{@bundle_jobs} --frozen --path . --gemfile lib/vendor/Gemfile"
         command << %( --without #{@without_groups.join(' ')}) if @without_groups.any?
         command
       end
