@@ -39,6 +39,8 @@ module Tara
     #   the directory where the archive will be created.
     # @option config [Boolean] :bundle_ignore_config (false)
     #   if Bundler config should be ignored when installing dependencies
+    # @option config [Integer] :bundle_jobs (4)
+    #   the number of parallel workers to be used when installing gems
     # @option config [String] :download_dir (File.join(@config[:build_dir], 'downloads'))
     #   the directory where Traveling Ruby artifacts will be downloaded.
     # @option config [String] :archive_name (@config[:app_name] + '.tgz') name of the archive
